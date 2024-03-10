@@ -9,6 +9,9 @@
 
 ## What is this?
 
+![](demo/porsches.png)
+
+
 WinDiffusion is a Stable Diffusion frontend written in C++/Qt, without a single line of Python involved, using the ONNX runtime and DirectML to execute models
 
 ### So, what's the deal?

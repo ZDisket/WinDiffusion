@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/stico">
+        <file>res/rarrow.png</file>
+        <file>res/rarrowvs.png</file>
+        <file>res/rarrowvsCHEVRON.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>res/rarrows.png</file>
+        <file>res/white460.png</file>
+        <file>res/white512.png</file>
+        <file>res/chevrons.png</file>
+    </qresource>
+</RCC>

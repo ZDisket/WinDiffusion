@@ -187,8 +187,7 @@ void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
     ImgPreviewTop->OriginalImg = InImg.copy();
     ImgPreviewTop->FilePath = OutPath;
 
-    connect(ImgPreviewTop, &TopBarImg::HoverEnter, this, &MainWindow::OnTopBarHoverEnter);
-    connect(ImgPreviewTop, &TopBarImg::HoverExit, this, &MainWindow::OnTopBarHoverExit);
+    connect(ImgPreviewTop, &TopBarImg::HoverChange, this, &MainWindow::OnTopBarHoverChange);
     connect(ImgPreviewTop, &TopBarImg::MouseClicked, this, &MainWindow::OnTopBarClick);
 
     ui->scraLayout->addWidget(ImgPreviewTop);
@@ -263,10 +262,6 @@ void MainWindow::OnImageSendToUpscale(QImage *SndImg)
 
 }
 
-void MainWindow::OnImgLabelContextMenu(QMenu *CntxMenu)
-{
-
-}
 
 void MainWindow::OnProgressPoll()
 {
@@ -283,24 +278,14 @@ void MainWindow::OnThreadDone()
     IterateQueue();
 }
 
-void MainWindow::OnTopBarHoverEnter(size_t LblIndex)
+
+void MainWindow::OnTopBarHoverChange(size_t LblIndex, bool Hovering)
 {
     int32_t Neighbor = GetNeighbor(LblIndex);
     if (Neighbor == -1)
         return;
 
-    TopBarImages[Neighbor]->SetHoveringBorder(true);
-
-}
-
-void MainWindow::OnTopBarHoverExit(size_t LblIndex)
-{
-    int32_t Neighbor = GetNeighbor(LblIndex);
-    if (Neighbor == -1)
-        return;
-
-    TopBarImages[Neighbor]->SetHoveringBorder(false);
-
+    TopBarImages[Neighbor]->SetHoveringBorder(Hovering);
 }
 
 void MainWindow::OnTopBarClick(size_t LblIndex)

@@ -47,15 +47,14 @@ public slots:
     void OnImageSendToImg2Img(QImage* SndImg);
     void OnImageSendToInpaint(QImage* SndImg);
     void OnImageSendToUpscale(QImage* SndImg);
-    void OnImgLabelContextMenu(QMenu* CntxMenu);
 
 
 private slots:
     void OnProgressPoll(); // Slot to be called by QTimer
     void OnThreadDone();
 
-    void OnTopBarHoverEnter(size_t LblIndex);
-    void OnTopBarHoverExit(size_t LblIndex);
+    void OnTopBarHoverChange(size_t LblIndex, bool Hovering);
+
     void OnTopBarClick(size_t LblIndex);
 
 private slots:

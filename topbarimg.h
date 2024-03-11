@@ -26,8 +26,7 @@ public:
     void SetSelectedBorder(bool IsSelected);
 
 signals:
-    void HoverEnter(size_t LblIndex);
-    void HoverExit(size_t LblIndex);
+    void HoverChange(size_t LblIndex, bool Hovering);
     void MouseClicked(size_t LblIndex);
 private:
     bool IsCurrentlySelected;

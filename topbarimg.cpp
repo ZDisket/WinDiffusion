@@ -21,7 +21,7 @@ void TopBarImg::enterEvent(QEnterEvent *event)
 
     SetHoveringBorder(true);
 
-    emit HoverEnter(VecIndex);
+    emit HoverChange(VecIndex, true);
 }
 
 void TopBarImg::leaveEvent(QEvent *event)
@@ -33,7 +33,7 @@ void TopBarImg::leaveEvent(QEvent *event)
 
     SetHoveringBorder(false);
 
-    emit HoverExit(VecIndex);
+    emit HoverChange(VecIndex, false);
 
 }
 

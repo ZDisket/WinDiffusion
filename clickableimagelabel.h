@@ -21,7 +21,7 @@ public:
 
     void loadImage(const QString& imagePath);
     void SetImage(QImage *Img);
-
+    void SetImagePreview(QImage& Img);
 private:
 
 

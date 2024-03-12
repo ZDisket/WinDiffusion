@@ -60,6 +60,14 @@ void ClickableImageLabel::SetImage(QImage* Img)
         );
 }
 
+void ClickableImageLabel::SetImagePreview(QImage &Img)
+{
+    OriginalImage = nullptr;
+    setPixmap(
+        QPixmap::fromImage(Img.scaled(pixmap().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation))
+        );
+}
+
 void ClickableImageLabel::mousePressEvent(QMouseEvent* event) {
     QLabel::mousePressEvent(event); // Call the base class implementation
 

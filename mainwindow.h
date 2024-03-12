@@ -47,6 +47,7 @@ public slots:
     void OnImageSendToImg2Img(QImage* SndImg);
     void OnImageSendToInpaint(QImage* SndImg);
     void OnImageSendToUpscale(QImage* SndImg);
+    void OnPreviewsAvailable(std::vector<Axodox::Graphics::TextureData> Previews);
 
 
 private slots:

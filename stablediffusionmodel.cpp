@@ -71,6 +71,65 @@ void StableDiffusionModel::CreateTextEmbeddings(const std::string &PosPrompt, co
 
 }
 
+Tensor StableDiffusionModel::RunInference(Axodox::MachineLearning::StableDiffusionOptions &Options, Axodox::Threading::async_operation_source *OpSrc)
+{
+
+
+    Tensor image;
+
+    // All this to account for img2img.
+    int realInitialStep = std::clamp(int(Options.StepCount - Options.StepCount * Options.DenoisingStrength - 1), 0, int(Options.StepCount));
+    int totalSteps = Options.StepCount;
+
+    int divTotalSteps = Options.StepCount - realInitialStep;
+    int stepJump = std::max(divTotalSteps / 8, 1);
+    int currentStep = realInitialStep + stepJump;
+
+
+    Tensor* currentRawLatents = nullptr;
+    Tensor rawLatents;
+
+    for (int i = currentStep; i < totalSteps; i += stepJump)
+    {
+
+        bool isLastStep = (i + stepJump >= totalSteps);
+        size_t initialStep = i - stepJump;
+
+        rawLatents = UNet->Iterate(Options, OpSrc, currentRawLatents, initialStep, isLastStep ? totalSteps : i); // last ternary operator to account for if not divisible
+
+        if (OpSrc->is_cancelled())
+            return Tensor{};
+
+        currentRawLatents = &rawLatents;
+
+
+        if (!isLastStep)
+        {
+            Tensor previewImage = VAE_D_Tiny->DecodeVae(
+                UNet->FinishInference(Options, rawLatents, false, true)
+                );
+
+            auto previewTextures = previewImage.ToTextureData(ColorNormalization::LinearZeroToOne); // TAESD is [0 - 1]
+
+            emit PreviewAvailable(previewTextures);
+
+        }
+
+
+
+
+
+
+
+    }
+
+    image = UNet->FinishInference(Options, rawLatents, true, false);
+
+    image = VAE_D->DecodeVae(image);
+
+    return image;
+}
+
 void StableDiffusionModel::LoadVAEEncoder()
 {
     VAE_E = std::make_unique<VaeEncoder>(*Env);
@@ -98,6 +157,7 @@ void StableDiffusionModel::Destroy()
         UNet.reset();
         VAE_D.reset();
         VAE_E.reset();
+        VAE_D_Tiny.reset();
 
     }catch (...)
     { // nobody gives a shit about errors on deletion.
@@ -106,7 +166,7 @@ void StableDiffusionModel::Destroy()
 
 }
 
-bool StableDiffusionModel::Load(const std::string &ModelPath)
+bool StableDiffusionModel::Load(const std::string &ModelPath, const std::string& AuxiliaryPath)
 {
     if (Loaded)
         Destroy();
@@ -119,6 +179,14 @@ bool StableDiffusionModel::Load(const std::string &ModelPath)
     TxtEmbedder = std::make_unique<TextEmbedder>(*Env);
     UNet = std::make_unique<StableDiffusionInferer>(*Env);
     VAE_D = std::make_unique<VaeDecoder>(*Env);
+
+    bool isSDXL = std::filesystem::is_directory(Env->RootPath() / "text_encoder_2");
+
+    std::string TinyDecoderFn = isSDXL ? "taesdxl_decoder.onnx" : "taesd_decoder.onnx";
+
+    VAE_D_Tiny = std::make_unique<VaeDecoder>(*Env, AuxiliaryPath + TinyDecoderFn);
+
+
 
     GetPredictionType(ModelPath);
     Loaded = true;
@@ -150,14 +218,11 @@ std::vector<Axodox::Collections::aligned_vector<uint8_t>> StableDiffusionModel::
 
     // Inference UNet
 
-    auto x = UNet->RunInference(Options, OpSrc);
+    auto x = RunInference(Options, OpSrc);
+
 
     if (OpSrc->is_cancelled())
         return std::vector<aligned_vector<uint8_t>>{};
-
-    // VAE
-
-    x = VAE_D->DecodeVae(x);
 
     TextureData d;
 

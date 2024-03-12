@@ -1,14 +1,17 @@
 #ifndef STABLEDIFFUSIONMODEL_H
 #define STABLEDIFFUSIONMODEL_H
 #include "Include/Axodox.MachineLearning.h"
-
-class StableDiffusionModel
+#include <QObject>
+class StableDiffusionModel : public QObject // We only use QObject for the signals, the class is made to be portable.
 {
+    Q_OBJECT
+
 private:
     std::unique_ptr<Axodox::MachineLearning::TextEmbedder> TxtEmbedder;
     std::unique_ptr<Axodox::MachineLearning::StableDiffusionInferer> UNet;
     std::unique_ptr<Axodox::MachineLearning::VaeDecoder> VAE_D;
     std::unique_ptr<Axodox::MachineLearning::VaeEncoder> VAE_E;
+    std::unique_ptr<Axodox::MachineLearning::VaeDecoder> VAE_D_Tiny;
     std::unique_ptr<Axodox::MachineLearning::OnnxEnvironment> Env;
     ID3D12Debug* debugController;
 
@@ -18,12 +21,15 @@ private:
 
     void GetPredictionType(const std::string& ModelPath);
     void CreateTextEmbeddings(const std::string& PosPrompt, const std::string& NegPrompt, Axodox::MachineLearning::StableDiffusionOptions& Options, Axodox::MachineLearning::ScheduledTensor* SchTensor);
+
+    Axodox::MachineLearning::Tensor RunInference( Axodox::MachineLearning::StableDiffusionOptions& Options, Axodox::Threading::async_operation_source* OpSrc = nullptr);
+
     void LoadVAEEncoder();
 public:
     StableDiffusionModel();
 
     void Destroy();
-    bool Load(const std::string& ModelPath);
+    bool Load(const std::string& ModelPath, const std::string &AuxiliaryPath);
 
     Axodox::MachineLearning::Tensor EncodeImageVAE(const Axodox::Graphics::TextureData& TexData);
 
@@ -36,6 +42,9 @@ public:
     void LoadMinimal();
 
     ~StableDiffusionModel();
+
+signals:
+    void PreviewAvailable(std::vector<Axodox::Graphics::TextureData> Prevs);
 };
 
 #endif // STABLEDIFFUSIONMODEL_H

@@ -9,6 +9,8 @@
 
 #include "ESRGAN.h"
 
+#include "QtAxodoxInteropCommon.hpp"
+
 // Function to create "outputs" folder if it doesn't exist
 QString createOutputsFolder() {
     QString applicationPath = QCoreApplication::applicationDirPath();
@@ -120,6 +122,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->lblLeftImg,&ClickableImageLabel::SendImageToInpaint,this,&MainWindow::OnImageSendToInpaint);
     connect(ui->lblLeftImg,&ClickableImageLabel::SendImageToImg2Img,this,&MainWindow::OnImageSendToImg2Img);
     connect(ui->lblLeftImg,&ClickableImageLabel::SendImageToUpscale,this,&MainWindow::OnImageSendToUpscale);
+
+    connect(&CurrentMdl, &StableDiffusionModel::PreviewAvailable, this, &MainWindow::OnPreviewsAvailable);
 
     UpdateUpscalerListing();
 
@@ -259,6 +263,20 @@ void MainWindow::OnImageSendToUpscale(QImage *SndImg)
 
     ui->lblUpscalePreImage->SetImage(SndImg);
 
+
+}
+
+void MainWindow::OnPreviewsAvailable(std::vector<Axodox::Graphics::TextureData> Previews)
+{
+    QImage PreviewImage;
+    QtAxInterop::InterOpHelper::TextureDataToQImage(Previews[0],PreviewImage);
+
+     ClickableImageLabel* Viewport = ui->lblLeftImg;
+
+    if (!UseFirst)
+        Viewport = ui->lblImg;
+
+    Viewport->SetImagePreview(PreviewImage);
 
 }
 
@@ -415,7 +433,7 @@ void MainWindow::on_btnLoadModel_clicked()
         fullModelPath = ui->edtModelPath->currentText().trimmed();
 
     // Load the model using the full path
-    CurrentMdl.Load(fullModelPath.toStdString());
+    CurrentMdl.Load(fullModelPath.toStdString(), QCoreApplication::applicationDirPath().toStdString() + "/auxiliary/");
 
 }
 

@@ -517,6 +517,9 @@ image-&gt;Send to img2img/inpaint</string>
                        <property name="minimum">
                         <number>1</number>
                        </property>
+                       <property name="maximum">
+                        <number>100</number>
+                       </property>
                        <property name="value">
                         <number>60</number>
                        </property>

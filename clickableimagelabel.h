@@ -46,6 +46,7 @@ signals:
 
 private slots:
     void showInFolder();
+    void Favorite();
 
     void OnClickSendToImg2Img();
     void OnClickSendToInpaint();
@@ -55,6 +56,7 @@ private:
     QAction* actSendToInpaint;
     QAction* actSendToImg2Img;
     QAction* actSendToUpscale;
+    QAction* actSendToFavorites;
 
 };
 

@@ -11,7 +11,6 @@ int main(int argc, char *argv[])
 
     winrt::uninit_apartment();
     winrt::init_apartment();
-    CoInitialize(nullptr);
 
     QGoodWindow gw;
     MainWindow w;

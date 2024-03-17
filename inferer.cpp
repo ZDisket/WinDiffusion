@@ -3,6 +3,7 @@
 #include <random>
 #include <QDebug>
 #include "QtAxodoxInteropCommon.hpp"
+#include "pathwidgetitem.h"
 
 using namespace Axodox::Graphics;
 using namespace Axodox::MachineLearning;
@@ -41,15 +42,40 @@ void Inferer::DoInference()
 
     StableDiffusionJobType CurrentJobType = StableDiffusionJobType::Txt2Img;
 
+
+    // Bulk upscale jobs load input and save outputs.
+    if (!OutputPath.empty())
+    {
+        auto pathItem = (PathWidgetItem*)itmInput;
+
+        InputImage = QImage(pathItem->getFullPath());
+
+
+    }
+
+
     if (EsrGan)
     {
 
         CurrentJobType = StableDiffusionJobType::Upscale;
 
-        QImage  UpsImg = EsrGan->UpscaleImg(InputImage, 256, 48, AsyncSrc);
+        // If the model isn't loaded, we can spare a little more VRAM in the form of bigger tiles.
+        // TODO: actually query the device for available VRAM instead of depending on whether the model is loaded or not.
+        uint32_t upsTileSz = !Model->IsLoaded() ? 384 : 256;
 
 
-        emit Done(UpsImg.copy(), CurrentJobType);
+
+        QImage  UpsImg = EsrGan->UpscaleImg(InputImage, upsTileSz, 48, AsyncSrc);
+
+        if (OutputPath.empty())
+            emit Done(UpsImg.copy(), CurrentJobType);
+        else
+        {
+            UpsImg.save(QString::fromStdString(OutputPath));
+            emit DoneBulk(UpsImg.copy(), OutputPath, itmInput);
+
+        }
+
 
         emit ThreadFinished();
         return;

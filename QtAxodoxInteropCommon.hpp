@@ -17,6 +17,11 @@ class InterOpHelper
     InterOpHelper(){};
 
 public:
+
+    /*
+     *
+     * Pass-as-reference for consistency with the inverse.
+    */
     static void QImageToTextureData(QImage& ReadyImage, Axodox::Graphics::TextureData& TexDat)
     {
         ReadyImage = ReadyImage.convertToFormat(QImage::Format_RGBA8888);
@@ -27,11 +32,14 @@ public:
         const uint8_t* data = reinterpret_cast<const uint8_t*>(ReadyImage.bits());
         size_t dataSize = static_cast<size_t>(ReadyImage.sizeInBytes());
 
-        // Assuming aligned_vector<uint8_t> can be initialized or assigned from iterators or pointers
         TexDat.Buffer.assign(data, data + dataSize);
 
     }
 
+    /*
+     * Why are we using pass-as-reference instead of returning a value?
+     * Because QImage, when built from a buffer, doesn't own its memory - it's just a view.
+    */
     static void TextureDataToQImage(Axodox::Graphics::TextureData& TexDat, QImage& OutImg)
     {
 
@@ -40,6 +48,7 @@ public:
 
         auto ImageBuffer = TexDat.ToFormat(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB).Buffer; // ToBuffer() emits obscure D3D12 error because it's been shitting itself
 
+        // DXGI_FORMAT_R8G8B8A8_UNORM_SRGB == QImage::Format_RGBA8888
         QImage image(ImageBuffer.data(), TexDat.Width, TexDat.Height, TexDat.Width * bytesPerPixel, format);
 
         OutImg = image.copy();

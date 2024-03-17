@@ -2,6 +2,7 @@
 #define INFERER_H
 
 #include <QThread>
+#include <QListWidgetItem>
 #include "stablediffusionmodel.h"
 #include "upscaler.h"
 #include <QImage>
@@ -9,7 +10,8 @@
 enum class StableDiffusionJobType{
   Txt2Img,
   Img2Img,
-  Upscale
+  Upscale,
+  BulkUpscale
 };
 // An Voxer is a thread spawned for the sole purpose of doing inference
 class Inferer : public QThread
@@ -38,10 +40,14 @@ public:
     uint32_t BatchCount;
     bool RandomSeed;
 
+    std::string OutputPath;
+    QListWidgetItem* itmInput;
+
     int32_t GetStepsDone();
 
 
 signals:
+    void DoneBulk(QImage Img, std::string OutputPath, QListWidgetItem* Itm);
     void Done(QImage Img, StableDiffusionJobType JobType);
     void ThreadFinished();
 };

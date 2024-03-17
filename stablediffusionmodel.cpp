@@ -116,11 +116,6 @@ Tensor StableDiffusionModel::RunInference(Axodox::MachineLearning::StableDiffusi
         }
 
 
-
-
-
-
-
     }
 
     image = UNet->FinishInference(Options, rawLatents, true, false);
@@ -150,9 +145,12 @@ StableDiffusionModel::StableDiffusionModel() {
 
 void StableDiffusionModel::Destroy()
 {
+    if (!IsLoaded())
+        return;
+
     try
     {
-        Env.reset();
+        //Env.reset();
         TxtEmbedder.reset();
         UNet.reset();
         VAE_D.reset();
@@ -163,6 +161,7 @@ void StableDiffusionModel::Destroy()
     { // nobody gives a shit about errors on deletion.
 
     }
+    Loaded = false;
 
 }
 

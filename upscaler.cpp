@@ -193,6 +193,9 @@ QImage Upscaler::UpscaleImg(const QImage &InImg, uint32_t TileSize, uint32_t Ove
 
 
     }
+
+    Model->Evict();
+
     int32_t UpsFactor = UpsChunks[2].size().width() / ImgList[2].size().width();
 
     QSize FinalChunkSize = szTileSize * UpsFactor;

@@ -20,11 +20,12 @@ ClickableImageLabel::ClickableImageLabel(QWidget *parent) : QLabel(parent) {
     actSendToImg2Img = new QAction("Send to img2img",this);
     actSendToInpaint = new QAction("Send to inpaint",this);
     actSendToUpscale = new QAction("Send to upscale",this);
+    actSendToFavorites = new QAction("Save to favorites",this);
 
    connect(actSendToImg2Img, &QAction::triggered, this, &ClickableImageLabel::OnClickSendToImg2Img);
    connect(actSendToInpaint, &QAction::triggered, this, &ClickableImageLabel::OnClickSendToInpaint);
    connect(actSendToUpscale, &QAction::triggered, this, &ClickableImageLabel::OnClickSendToUpscale);
-
+   connect(actSendToFavorites, &QAction::triggered, this, &ClickableImageLabel::Favorite);
 
    OwnsImage = false;
 }
@@ -121,6 +122,8 @@ void ClickableImageLabel::contextMenuEvent(QContextMenuEvent *event) {
     contextMenu.addAction(actSendToImg2Img);
     contextMenu.addAction(actSendToInpaint);
     contextMenu.addAction(actSendToUpscale);
+    contextMenu.addAction(actSendToFavorites);
+
     contextMenu.exec(event->globalPos());
 }
 
@@ -136,6 +139,36 @@ void ClickableImageLabel::showInFolder() {
     }
 }
 
+
+void ClickableImageLabel::Favorite() {
+    QString FavesDir = QCoreApplication::applicationDirPath() + "/favorites/";
+
+    // Ensure the favorites directory exists; create it if it doesn't
+    QDir dir(FavesDir);
+    if (!dir.exists()) {
+        dir.mkpath(FavesDir);
+    }
+
+    if (pToOriginalFilePath && !pToOriginalFilePath->isEmpty()) {
+        // Extract the filename from the original path
+        QFileInfo fileInfo(*pToOriginalFilePath);
+        QString fileName = fileInfo.fileName();
+
+        // Construct the new file path in the favorites directory
+        QString newFilePath = FavesDir + fileName;
+
+        // Copy the file to the favorites directory
+        bool success = QFile::copy(*pToOriginalFilePath, newFilePath);
+
+        if (!success) {
+            // Handle the case where the file could not be copied
+            qDebug() << "Could not copy the file to the favorites directory.";
+        }
+    } else {
+        // Handle the case where pToOriginalFilePath is null or empty
+        qDebug() << "Original file path is not set.";
+    }
+}
 void ClickableImageLabel::OnClickSendToImg2Img()
 {
 

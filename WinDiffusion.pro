@@ -18,6 +18,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     paintablecanvas.cpp \
+    pathwidgetitem.cpp \
     stablediffusionmodel.cpp \
     topbarimg.cpp \
     upscaler.cpp
@@ -30,6 +31,7 @@ HEADERS += \
     inferer.h \
     mainwindow.h \
     paintablecanvas.h \
+    pathwidgetitem.h \
     stablediffusionmodel.h \
     topbarimg.h \
     upscaler.h

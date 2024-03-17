@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1356</width>
-    <height>958</height>
+    <width>1399</width>
+    <height>980</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,7 +48,7 @@
     <item>
      <widget class="QTabWidget" name="tabsMain">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -116,7 +116,7 @@ strokes</string>
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1068</width>
+                    <width>1111</width>
                     <height>85</height>
                    </rect>
                   </property>
@@ -737,7 +737,7 @@ image-&gt;Send to img2img/inpaint</string>
           <item>
            <widget class="QTabWidget" name="tabsUpsOptions">
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="tab_2">
              <attribute name="title">
@@ -869,8 +869,198 @@ image-&gt;Send to img2img/inpaint</string>
             </widget>
             <widget class="QWidget" name="tab_3">
              <attribute name="title">
-              <string>Tab 2</string>
+              <string>Bulk</string>
              </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_17">
+              <item>
+               <widget class="QFrame" name="frame">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_11">
+                 <item>
+                  <widget class="QSplitter" name="splitter_3">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <widget class="QWidget" name="verticalLayoutWidget_4">
+                    <layout class="QVBoxLayout" name="verticalLayout_18">
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_13">
+                       <item>
+                        <widget class="QLabel" name="label_15">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>Input files to upscale:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="btnAddFromSpecialFolder">
+                         <property name="text">
+                          <string>Add from favorites</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_12">
+                       <item>
+                        <widget class="QLineEdit" name="ledtBulkAddFolderPath">
+                         <property name="placeholderText">
+                          <string>Input folder here and click Add, or drag files to the list</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="btnUpsBrowseFolder">
+                         <property name="text">
+                          <string>Browse</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="btnAddBulkFolder">
+                         <property name="text">
+                          <string>Add</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_15">
+                       <item>
+                        <widget class="QCheckBox" name="chkAutoUnloadModel">
+                         <property name="text">
+                          <string>Auto-unload Stable Diffusion model</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QCheckBox" name="chkAutoBrowseFolder">
+                         <property name="text">
+                          <string>Open output folder once done</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <widget class="QListWidget" name="lstInputBulkFiles">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                   <widget class="QWidget" name="verticalLayoutWidget_5">
+                    <layout class="QVBoxLayout" name="verticalLayout_19">
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_14">
+                       <item>
+                        <widget class="QLabel" name="label_14">
+                         <property name="text">
+                          <string>Output folder:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLineEdit" name="ledtBulkOutputFolder">
+                         <property name="placeholderText">
+                          <string>Leave empty for automatic...</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="btnBrowseBulkUpsOutFolder">
+                         <property name="text">
+                          <string>Browse</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="lblCurrentBulkUpscale">
+                       <property name="text">
+                        <string>Image:</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="lblImgBulkUps">
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="pixmap">
+                        <pixmap resource="stdres.qrc">:/res/white460.png</pixmap>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_16">
+                <item>
+                 <widget class="QLabel" name="lblTotalUpscaleProg">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Upscale: 0/0 files</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QProgressBar" name="pgbBulkUpscales">
+                  <property name="value">
+                   <number>24</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </widget>
            </widget>
           </item>
@@ -901,7 +1091,7 @@ image-&gt;Send to img2img/inpaint</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1356</width>
+     <width>1399</width>
      <height>26</height>
     </rect>
    </property>
@@ -910,6 +1100,8 @@ image-&gt;Send to img2img/inpaint</string>
      <string>File</string>
     </property>
     <addaction name="actionOpen_outputs_directory"/>
+    <addaction name="actionOpen_favorites_directory"/>
+    <addaction name="separator"/>
     <addaction name="actionRefresh_model_listing"/>
    </widget>
    <widget class="QMenu" name="menuActions">
@@ -959,6 +1151,11 @@ image-&gt;Send to img2img/inpaint</string>
   <action name="actionRefresh_model_listing">
    <property name="text">
     <string>Refresh model listing</string>
+   </property>
+  </action>
+  <action name="actionOpen_favorites_directory">
+   <property name="text">
+    <string>Open favorites directory</string>
    </property>
   </action>
  </widget>

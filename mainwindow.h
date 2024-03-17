@@ -24,6 +24,8 @@ struct SDOrder{
     QImage InputImage;
     QImage InputMask;
     bool IsUpscale = false;
+    std::string OutputPath = "";
+    QListWidgetItem* itmUpscaleInput = nullptr;
 
 };
 
@@ -43,6 +45,7 @@ public:
 
 public slots:
     void OnImageDone(QImage InImg, StableDiffusionJobType JobType);
+    void OnBulkImageDone(QImage InImg, std::string OutputPath, QListWidgetItem *Itm);
     void OnInpaintWidImageSet();
     void OnImageSendToImg2Img(QImage* SndImg);
     void OnImageSendToInpaint(QImage* SndImg);
@@ -92,7 +95,18 @@ private slots:
 
     void on_btnLoadUpscaler_clicked();
 
+    void on_btnUpsBrowseFolder_clicked();
+
+    void on_btnAddBulkFolder_clicked();
+
+    void on_btnBrowseBulkUpsOutFolder_clicked();
+
+    void on_btnAddFromSpecialFolder_clicked();
+
+    void on_actionOpen_favorites_directory_triggered();
+
 private:
+
     bool DidFirstShowStuff;
     int32_t GetNeighbor(size_t InIdx);
     void IterateQueue();
@@ -108,10 +122,13 @@ private:
 
 
     QProgressBar* CurrentPgb;
+    QProgressBar* CurrentGlobalPgb;
+
     void UpdateModelListing();
     void UpdateSelectedTopBarImg(size_t NewSelected);
     void ResetViewports();
     void OnImg2ImgEnabled();
+    void OpenDirectory(const QString& dir);
 
 private:
     QTimer* progressPoller; // QTimer object

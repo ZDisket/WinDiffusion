@@ -11,6 +11,9 @@
 
 #include "QtAxodoxInteropCommon.hpp"
 
+#include "pathwidgetitem.h"
+#include <QFileDialog>
+
 // Function to create "outputs" folder if it doesn't exist
 QString createOutputsFolder() {
     QString applicationPath = QCoreApplication::applicationDirPath();
@@ -127,7 +130,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     UpdateUpscalerListing();
 
+    CoInitializeEx( 0, COINIT_APARTMENTTHREADED );
 
+    CurrentGlobalPgb = ui->pgbAllGens;
 
 
 }
@@ -158,6 +163,7 @@ void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
     QString dateSubfolder = QDate::currentDate().toString("dd-MM-yyyy");
     QString ImmediateFolder = JobTypeToOutdir[(size_t)JobType];
     QString targetDirectory = QString("%1/%3/%2").arg(OutpsDir, dateSubfolder, ImmediateFolder);
+
 
     QString OutPath = saveImage(InImg, targetDirectory);
 
@@ -206,10 +212,10 @@ void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
 
     ui->lblAllGensProgress->setText(
         QString::number(TaskQueue.size()) + " orders in queue\n" +
-        "Image " + QString::number(CurrentImageNumber) + "/"  + QString::number(ui->pgbAllGens->maximum())
+        "Image " + QString::number(CurrentImageNumber) + "/"  + QString::number(CurrentGlobalPgb->maximum())
         );
 
-    ui->pgbAllGens->setValue(CurrentImageNumber);
+    CurrentGlobalPgb->setValue(CurrentImageNumber);
 
     PreviewsSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
     ui->scraLayout->addSpacerItem(PreviewsSpacer);
@@ -231,6 +237,27 @@ void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
 
 //    ui->scraImgPreviews->ensureWidgetVisible(ImgPreviewTop);
    // ui->scraImgPreviews->scroll(64 * TopBarImages.size(),0);
+
+
+}
+
+void MainWindow::OnBulkImageDone(QImage InImg, std::string OutputPath, QListWidgetItem* Itm)
+{
+
+    ui->lblImgBulkUps->setPixmap(QPixmap::fromImage(InImg.scaled(512,512))
+                                 );
+
+
+
+    CurrentGlobalPgb->setValue(CurrentItemNumber);
+
+    Itm->setBackground(QBrush(Qt::green));
+
+    ui->lblTotalUpscaleProg->setText("Upscale: " + QString::number(CurrentItemNumber) + "/" + QString::number(CurrentGlobalPgb->maximum()) + " files.");
+
+    if (CurrentItemNumber == CurrentGlobalPgb->maximum() && ui->chkAutoBrowseFolder->isChecked())
+        OpenDirectory(ui->ledtBulkOutputFolder->text());
+
 
 
 }
@@ -364,6 +391,9 @@ void MainWindow::on_btnGenerate_clicked()
     if (!CurrentMdl.IsLoaded())
         on_btnLoadModel_clicked();
 
+    CurrentGlobalPgb = ui->pgbAllGens;
+
+
     Axodox::MachineLearning::StableDiffusionOptions Options;
 
     Options.BatchSize = ui->spbBatchSize->value();
@@ -410,7 +440,7 @@ void MainWindow::on_btnGenerate_clicked()
 
     ui->lblAllGensProgress->setText(
         QString::number(TaskQueue.size() + 1) + " orders in queue\n" +
-        "Image " + QString::number(CurrentImageNumber) + "/"  + QString::number(ui->pgbAllGens->maximum())
+        "Image " + QString::number(CurrentImageNumber) + "/"  + QString::number(CurrentGlobalPgb->maximum())
         );
 
     IterateQueue();
@@ -491,6 +521,9 @@ void MainWindow::IterateQueue()
     if (!CuOrd.InputMask.isNull())
         InferThrd->InputMask = CuOrd.InputMask.copy();
 
+
+
+
     if (CuOrd.IsUpscale)
     {
         CurrentUpscaler.SetEnv(CurrentMdl.GetEnv());
@@ -498,29 +531,46 @@ void MainWindow::IterateQueue()
 
         CurrentPgb = ui->pgbUpscaleProg;
 
+        InferThrd->OutputPath = CuOrd.OutputPath;
+        InferThrd->itmInput = CuOrd.itmUpscaleInput;
+
+        if (CuOrd.itmUpscaleInput){
+            CuOrd.itmUpscaleInput->setBackground(QBrush(Qt::blue));
+            CurrentGlobalPgb->setRange(0, ui->lstInputBulkFiles->count());
+        }
+
+
+
+
     }
     else{
         InferThrd->EsrGan = nullptr;
         CurrentPgb = ui->pgbCurrentGen;
+        CurrentGlobalPgb->setRange(0, CuOrd.BatchCount);
     }
 
 
-    connect(InferThrd,&Inferer::Done,this,&MainWindow::OnImageDone);
-    connect(InferThrd,&Inferer::ThreadFinished,this,&MainWindow::OnThreadDone);
+
+    connect(InferThrd, &Inferer::Done, this, &MainWindow::OnImageDone);
+    connect(InferThrd, &Inferer::DoneBulk, this, &MainWindow::OnBulkImageDone);
+    connect(InferThrd, &Inferer::ThreadFinished, this, &MainWindow::OnThreadDone);
+
 
     // Otherwise the thread lingers and causes a memory leak
     connect(InferThrd, &Inferer::finished, InferThrd, &QObject::deleteLater);
 
     CurrentInferThrd = InferThrd;
-    ui->pgbCurrentGen->setRange(0, 100);
-    ui->pgbUpscaleProg->setRange(0, 100);
+
 
     InferThrd->AsyncSrc = CurrentAsyncSrc.get();
     InferThrd->start();
 
+
     ++CurrentItemNumber;
 
-    ui->pgbAllGens->setRange(0, CuOrd.BatchCount);
+    ui->pgbCurrentGen->setRange(0, 100);
+    ui->pgbUpscaleProg->setRange(0, 100);
+
 
 
     TaskQueue.pop();
@@ -656,6 +706,16 @@ void MainWindow::OnImg2ImgEnabled()
     ui->widInpaintCanvas->loadImage(white);
 }
 
+void MainWindow::OpenDirectory(const QString &dir)
+{
+    QString winPath = QDir::toNativeSeparators(dir);
+
+    QStringList args;
+    args << winPath;
+    QProcess::startDetached("explorer", args);
+
+}
+
 
 void MainWindow::on_btnImagesForward_clicked()
 {
@@ -710,12 +770,7 @@ void MainWindow::on_actionScroll_Right_triggered()
 
 void MainWindow::on_actionOpen_outputs_directory_triggered()
 {
-    QString winPath = QDir::toNativeSeparators(OutpsDir);
-
-    QStringList args;
-    args << winPath;
-    QProcess::startDetached("explorer", args);
-
+    OpenDirectory(OutpsDir);
 }
 
 
@@ -813,17 +868,74 @@ void MainWindow::on_btnUpscale_clicked()
         on_btnLoadUpscaler_clicked();
 
 
-    SDOrder Ord{ui->edtPrompt->toPlainText().toStdString(), ui->edtNegPrompt->toPlainText().toStdString(), Axodox::MachineLearning::StableDiffusionOptions{}, (uint32_t)ui->spbBatchCount->value(), ui->edtSeed->text().isEmpty()};
+    if (ui->tabsUpsOptions->currentIndex() == 0)// Single
+    {
+        SDOrder Ord{ui->edtPrompt->toPlainText().toStdString(), ui->edtNegPrompt->toPlainText().toStdString(), Axodox::MachineLearning::StableDiffusionOptions{}, (uint32_t)ui->spbBatchCount->value(), ui->edtSeed->text().isEmpty()};
 
-    Ord.InputImage = *ui->lblUpscalePreImage->OriginalImage;
-    Ord.IsUpscale = true;
-
-
-
-
+        Ord.InputImage = *ui->lblUpscalePreImage->OriginalImage;
+        Ord.IsUpscale = true;
 
 
-    TaskQueue.push(Ord);
+
+
+
+
+        TaskQueue.push(Ord);
+
+    }else
+    { // Bulk
+        if (ui->ledtBulkOutputFolder->text().isEmpty()) {
+            // Get the application directory path
+            QString appDirPath = QCoreApplication::applicationDirPath();
+
+            // Construct the path for the new folder using the current date
+            QString dateStr = QDate::currentDate().toString("dd-MM-yyyy");
+            QString newFolderPath = appDirPath + "/outputs/bulk-upscale/" + dateStr;
+
+            // Create the directory (and any necessary parent directories)
+            QDir dir;
+            if (dir.mkpath(newFolderPath)) {
+                // If the directory was successfully created, set the QLineEdit's text
+                ui->ledtBulkOutputFolder->setText(newFolderPath);
+            } else {
+                // Handle error if the directory could not be created
+                // This could be due to permissions or other issues.
+                qDebug() << "Could not create directory at path:" << newFolderPath;
+            }
+        }
+
+        CurrentGlobalPgb = ui->pgbBulkUpscales;
+        for (int i = 0; i < ui->lstInputBulkFiles->count(); ++i)
+        {
+            QListWidgetItem* cuItem = ui->lstInputBulkFiles->item(i);
+
+            auto pathItem = (PathWidgetItem*)cuItem;
+
+            SDOrder Ord{ui->edtPrompt->toPlainText().toStdString(), ui->edtNegPrompt->toPlainText().toStdString(), Axodox::MachineLearning::StableDiffusionOptions{}, (uint32_t)ui->spbBatchCount->value(), ui->edtSeed->text().isEmpty()};
+
+            Ord.IsUpscale = true;
+            Ord.itmUpscaleInput = cuItem;
+
+
+
+
+            Ord.OutputPath = (
+                              std::filesystem::path(ui->ledtBulkOutputFolder->text().toStdString()) / pathItem->text().toStdString()
+                              ).string();
+
+            TaskQueue.push(Ord);
+
+
+
+
+
+        }
+
+        if (ui->chkAutoUnloadModel->isChecked() && ui->lstInputBulkFiles->count() > 5)
+            CurrentMdl.Destroy();
+
+    }
+
 
 
     IterateQueue();
@@ -841,6 +953,79 @@ void MainWindow::on_btnLoadUpscaler_clicked()
     CurrentUpscaler.Load(
         QString(QCoreApplication::applicationDirPath() + "/upscalers/" + ui->cbUpscalerModels->currentText() + ".onnx").toStdString()
         );
+
+}
+
+
+
+void MainWindow::on_btnUpsBrowseFolder_clicked() {
+
+    QString folderPath = QFileDialog::getExistingDirectory(this, tr("Select Folder"), QDir::currentPath(),
+                                                           QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks |  QFileDialog::DontUseNativeDialog);
+
+    if (folderPath.isEmpty())
+        return;
+
+
+    ui->ledtBulkAddFolderPath->setText(folderPath);
+
+}
+
+
+void MainWindow::on_btnAddBulkFolder_clicked() {
+    // Clear the list widget to avoid duplicating items if the button is clicked multiple times
+    ui->lstInputBulkFiles->clear();
+
+    QString folderPath = ui->ledtBulkAddFolderPath->text();
+
+    // Check if the folder path is not empty
+    if (!folderPath.isEmpty()) {
+        QDir directory(folderPath);
+
+        QStringList imageFilters;
+        imageFilters << "*.png" << "*.jpg" << "*.jpeg";
+
+        QFileInfoList fileList = directory.entryInfoList(imageFilters, QDir::Files | QDir::NoDotAndDotDot);
+
+        foreach (const QFileInfo &file, fileList) {
+            new PathWidgetItem(file.absoluteFilePath(), ui->lstInputBulkFiles);
+        }
+    }
+}
+
+
+void MainWindow::on_btnBrowseBulkUpsOutFolder_clicked()
+{
+    QString folderPath = QFileDialog::getExistingDirectory(this, tr("Select Folder"), QDir::currentPath(),             // COM issues mean we can't use native dialog
+                                                           QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+
+    if (folderPath.isEmpty())
+        return;
+
+
+    ui->ledtBulkOutputFolder->setText(folderPath);
+
+}
+
+
+void MainWindow::on_btnAddFromSpecialFolder_clicked()
+{
+    QString FavesDir = QCoreApplication::applicationDirPath() + "/favorites/";
+
+    QDir dir(FavesDir);
+
+    if (!dir.exists())
+        return;
+
+    ui->ledtBulkAddFolderPath->setText(FavesDir);
+    on_btnAddBulkFolder_clicked();
+
+}
+
+
+void MainWindow::on_actionOpen_favorites_directory_triggered()
+{
+    OpenDirectory(QCoreApplication::applicationDirPath() + "/favorites/");
 
 }
 

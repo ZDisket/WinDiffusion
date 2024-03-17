@@ -13,6 +13,7 @@ win32:LIBS += -lwindowsapp -lOLEAUT32 -lOle32 -lgdi32 -lUser32
 SOURCES += \
     ESRGAN.cpp \
     clickableimagelabel.cpp \
+    draggablelistwidget.cpp \
     horizontalscrollarea.cpp \
     inferer.cpp \
     main.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     ESRGAN.h \
     QtAxodoxInteropCommon.hpp \
     clickableimagelabel.h \
+    draggablelistwidget.h \
     horizontalscrollarea.h \
     inferer.h \
     mainwindow.h \

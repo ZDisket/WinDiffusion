@@ -984,7 +984,7 @@ image-&gt;Send to img2img/inpaint</string>
                       </layout>
                      </item>
                      <item>
-                      <widget class="QListWidget" name="lstInputBulkFiles">
+                      <widget class="DraggableListWidget" name="lstInputBulkFiles">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                          <horstretch>0</horstretch>
@@ -1231,6 +1231,11 @@ image-&gt;Send to img2img/inpaint</string>
    <extends>QWidget</extends>
    <header>paintablecanvas.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DraggableListWidget</class>
+   <extends>QListWidget</extends>
+   <header>draggablelistwidget.h</header>
   </customwidget>
  </customwidgets>
  <resources>

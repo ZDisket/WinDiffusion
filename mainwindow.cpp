@@ -883,10 +883,6 @@ void MainWindow::on_btnUpscale_clicked()
         Ord.IsUpscale = true;
 
 
-
-
-
-
         TaskQueue.push(Ord);
 
     }else

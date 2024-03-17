@@ -105,8 +105,13 @@ private slots:
 
     void on_actionOpen_favorites_directory_triggered();
 
+    void on_actionWhat_s_this_triggered(bool checked);
+
+    void on_actionWhat_s_this_triggered();
+
 private:
 
+    void SetControls(bool Enabled);
     bool DidFirstShowStuff;
     int32_t GetNeighbor(size_t InIdx);
     void IterateQueue();

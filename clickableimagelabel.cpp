@@ -150,25 +150,32 @@ void ClickableImageLabel::Favorite() {
     }
 
     if (pToOriginalFilePath && !pToOriginalFilePath->isEmpty()) {
-        // Extract the filename from the original path
-        QFileInfo fileInfo(*pToOriginalFilePath);
-        QString fileName = fileInfo.fileName();
+        // Construct the base filename for the new favorite file
+        QString baseFileName = "fave_";
+        QString fileExtension = ".png";
 
-        // Construct the new file path in the favorites directory
-        QString newFilePath = FavesDir + fileName;
+        // Find the lowest number that can be used without overwriting an existing file
+        int num = 1;
+        QString newFileName;
+        do {
+            newFileName = baseFileName + QString::number(num++) + fileExtension;
+        } while (dir.exists(newFileName));
 
-        // Copy the file to the favorites directory
+        // Construct the full new file path
+        QString newFilePath = FavesDir + newFileName;
+
+        // Copy the original image file to the new favorite file path
         bool success = QFile::copy(*pToOriginalFilePath, newFilePath);
 
         if (!success) {
-            // Handle the case where the file could not be copied
-            qDebug() << "Could not copy the file to the favorites directory.";
+            qDebug() << "Could not copy the file to the favorites directory: " << newFilePath;
         }
     } else {
-        // Handle the case where pToOriginalFilePath is null or empty
         qDebug() << "Original file path is not set.";
     }
 }
+
+
 void ClickableImageLabel::OnClickSendToImg2Img()
 {
 

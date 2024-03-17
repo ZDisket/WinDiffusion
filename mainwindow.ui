@@ -569,6 +569,9 @@ image-&gt;Send to img2img/inpaint</string>
                 </item>
                 <item row="1" column="1">
                  <widget class="QPlainTextEdit" name="edtNegPrompt">
+                  <property name="toolTip">
+                   <string>What you DON'T want in the image</string>
+                  </property>
                   <property name="plainText">
                    <string>ugly, bad quality, deformed, blurry, worst quality</string>
                   </property>
@@ -582,7 +585,11 @@ image-&gt;Send to img2img/inpaint</string>
                  </widget>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QPlainTextEdit" name="edtPrompt"/>
+                 <widget class="QPlainTextEdit" name="edtPrompt">
+                  <property name="toolTip">
+                   <string>What you want in the image</string>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>
@@ -649,6 +656,9 @@ image-&gt;Send to img2img/inpaint</string>
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="toolTip">
+                   <string>Number of iterations to run the denoiser. 25-40 for SD/SDXL, 2-8 for Turbo/Lightning</string>
                   </property>
                   <property name="minimum">
                    <number>1</number>
@@ -947,6 +957,15 @@ image-&gt;Send to img2img/inpaint</string>
                       <layout class="QHBoxLayout" name="horizontalLayout_15">
                        <item>
                         <widget class="QCheckBox" name="chkAutoUnloadModel">
+                         <property name="toolTip">
+                          <string>Unloads image generation model if the queue is long to save up VRAM for more aggressive use of the upscaler</string>
+                         </property>
+                         <property name="statusTip">
+                          <string/>
+                         </property>
+                         <property name="whatsThis">
+                          <string>Automatically unload Stable Diffusion model if we have a big queue. This frees up video memory to employ heavier use of the upscaling model, which speeds up upscaling. Recommended for GPUs with less than 16GB of VRAM. The model will be automatically reloaded on demand</string>
+                         </property>
                          <property name="text">
                           <string>Auto-unload Stable Diffusion model</string>
                          </property>
@@ -971,6 +990,16 @@ image-&gt;Send to img2img/inpaint</string>
                          <horstretch>0</horstretch>
                          <verstretch>0</verstretch>
                         </sizepolicy>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="chkSkipAlreadyUpscaled">
+                       <property name="text">
+                        <string>Skip already upscaled</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -1112,8 +1141,15 @@ image-&gt;Send to img2img/inpaint</string>
     <addaction name="actionScroll_Right"/>
     <addaction name="actionClear_current_outputs_2"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionWhat_s_this"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionScroll_Left">
@@ -1156,6 +1192,25 @@ image-&gt;Send to img2img/inpaint</string>
   <action name="actionOpen_favorites_directory">
    <property name="text">
     <string>Open favorites directory</string>
+   </property>
+  </action>
+  <action name="actToggleHelp">
+   <property name="text">
+    <string>?</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionWhat_s_this">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>What's this?</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
  </widget>

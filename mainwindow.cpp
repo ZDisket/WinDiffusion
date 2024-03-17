@@ -244,7 +244,7 @@ void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
 void MainWindow::OnBulkImageDone(QImage InImg, std::string OutputPath, QListWidgetItem* Itm)
 {
 
-    ui->lblImgBulkUps->setPixmap(QPixmap::fromImage(InImg.scaled(512,512))
+    ui->lblImgBulkUps->setPixmap(QPixmap::fromImage(InImg.scaled(512,512, Qt::KeepAspectRatio, Qt::SmoothTransformation))
                                  );
 
 
@@ -255,8 +255,15 @@ void MainWindow::OnBulkImageDone(QImage InImg, std::string OutputPath, QListWidg
 
     ui->lblTotalUpscaleProg->setText("Upscale: " + QString::number(CurrentItemNumber) + "/" + QString::number(CurrentGlobalPgb->maximum()) + " files.");
 
-    if (CurrentItemNumber == CurrentGlobalPgb->maximum() && ui->chkAutoBrowseFolder->isChecked())
-        OpenDirectory(ui->ledtBulkOutputFolder->text());
+
+    if (CurrentItemNumber == CurrentGlobalPgb->maximum())
+    {
+        SetControls(true);
+
+        if (ui->chkAutoBrowseFolder->isChecked())
+            OpenDirectory(ui->ledtBulkOutputFolder->text());
+
+    }
 
 
 
@@ -905,6 +912,9 @@ void MainWindow::on_btnUpscale_clicked()
         }
 
         CurrentGlobalPgb = ui->pgbBulkUpscales;
+
+        std::vector<QListWidgetItem*> itemsToDelete;
+
         for (int i = 0; i < ui->lstInputBulkFiles->count(); ++i)
         {
             QListWidgetItem* cuItem = ui->lstInputBulkFiles->item(i);
@@ -916,23 +926,37 @@ void MainWindow::on_btnUpscale_clicked()
             Ord.IsUpscale = true;
             Ord.itmUpscaleInput = cuItem;
 
-
-
-
             Ord.OutputPath = (
                               std::filesystem::path(ui->ledtBulkOutputFolder->text().toStdString()) / pathItem->text().toStdString()
                               ).string();
 
+
+            if (ui->chkSkipAlreadyUpscaled->isChecked() && std::filesystem::exists(Ord.OutputPath))
+            {
+                // We flag these items for deletion later; if we do so right now, we have to deal with the rest shifting position within the loop
+                // We can do that, but it's cleaner and less headache-y code to just delete them later.
+                itemsToDelete.push_back(cuItem);
+                continue;
+
+
+            }
+
             TaskQueue.push(Ord);
-
-
-
-
 
         }
 
+
+        for (QListWidgetItem* itm : itemsToDelete)
+             delete itm;
+
+
+        ui->lstInputBulkFiles->update();
+
         if (ui->chkAutoUnloadModel->isChecked() && ui->lstInputBulkFiles->count() > 5)
             CurrentMdl.Destroy();
+
+        if (TaskQueue.size())
+            SetControls(false);
 
     }
 
@@ -1026,6 +1050,31 @@ void MainWindow::on_btnAddFromSpecialFolder_clicked()
 void MainWindow::on_actionOpen_favorites_directory_triggered()
 {
     OpenDirectory(QCoreApplication::applicationDirPath() + "/favorites/");
+
+}
+
+
+void MainWindow::on_actionWhat_s_this_triggered(bool checked)
+{
+    if (checked)
+        QWhatsThis::enterWhatsThisMode();
+    else
+        QWhatsThis::leaveWhatsThisMode();
+
+
+}
+
+
+void MainWindow::on_actionWhat_s_this_triggered()
+{
+
+}
+
+void MainWindow::SetControls(bool Enabled)
+{
+    ui->btnUpscale->setEnabled(Enabled);
+    ui->btnGenerate->setEnabled(Enabled);
+    ui->btnAddBulkFolder->setEnabled(Enabled);
 
 }
 

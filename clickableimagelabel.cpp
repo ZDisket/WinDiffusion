@@ -39,7 +39,7 @@ ClickableImageLabel::~ClickableImageLabel()
     }
 
 
-    ((QLabel*)this)->~QLabel();
+ //   ((QLabel*)this)->~QLabel();
 
 }
 

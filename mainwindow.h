@@ -15,6 +15,8 @@ class MainWindow;
 QT_END_NAMESPACE
 
 
+using CanvasTabPtr = QWidget*;
+
 struct SDOrder{
     std::string Prompt;
     std::string NegativePrompt;
@@ -50,7 +52,8 @@ public slots:
     void OnImageSendToImg2Img(QImage* SndImg);
     void OnImageSendToInpaint(QImage* SndImg);
     void OnImageSendToUpscale(QImage* SndImg);
-    void OnPreviewsAvailable(std::vector<Axodox::Graphics::TextureData> Previews);
+    void OnPreviewsAvailable(std::vector<QImage> Previews);
+    void ModelLoadDemanded();
 
 
 private slots:
@@ -109,6 +112,8 @@ private slots:
 
     void on_actionWhat_s_this_triggered();
 
+    void on_btnClearUpscaleAdds_clicked();
+
 private:
 
     void SetControls(bool Enabled);
@@ -145,6 +150,8 @@ private:
     Upscaler CurrentUpscaler;
     Ui::MainWindow *ui;
     Inferer* CurrentInferThrd;
+    CanvasTabPtr canvasTab;
     void UpdateUpscalerListing();
+
 };
 #endif // MAINWINDOW_H

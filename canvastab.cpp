@@ -1,0 +1,338 @@
+#include "canvastab.h"
+#include "ui_canvastab.h"
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+
+using namespace color_widgets;
+
+CanvasTab::CanvasTab(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::CanvasTab)
+{
+    ui->setupUi(this);
+
+
+    SetupColorWidgets();
+
+    SetupCanvas();
+
+    Inferer = nullptr;
+
+    ui->grpFillBucketOptions->hide();
+
+
+
+
+}
+
+void CanvasTab::SetupColorWidgets()
+{
+    ui->layColorSel->removeWidget(ui->btnSwitchColors);
+    selPrimColor = new ColorSelector(this);
+    selSecondColor = new ColorSelector(this);
+
+    selPrimColor->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    selSecondColor->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+
+    ui->layColorSel->addWidget(selPrimColor);
+    ui->layColorSel->addWidget(ui->btnSwitchColors);
+    ui->layColorSel->addWidget(selSecondColor);
+
+    connect(selPrimColor, &ColorSelector::colorSelected, this, &CanvasTab::onPrimaryColorSelected);
+    connect(selSecondColor, &ColorSelector::colorSelected, this, &CanvasTab::onSecondaryColorSelected);
+
+}
+
+void CanvasTab::SetupCanvas()
+{
+    // Assuming this code is in your main window's constructor or initialization function
+    Scene = new DrawingScene(this);
+    ui->viewDraw->setScene(Scene);
+
+    QSize cvs(768,768);
+    Scene->Initialize(cvs);
+
+    AddLayer("Background", Qt::white);
+    AddLayer("Layer 1");
+
+    Scene->ToolColors = std::pair<QColor, QColor>(selPrimColor->color(), selSecondColor->color());
+
+    connect(Scene, &DrawingScene::brushSizeChanged, this, &CanvasTab::onBrushSizeChanged);
+
+    ui->viewResult->needsControlScroll = false;
+    resultPixmapItem = nullptr;
+
+
+}
+
+void CanvasTab::AddLayer(const QString &layname, const QColor &col)
+{
+    Scene->addLayer(layname, col);
+
+    ui->scraLayout->insertWidget(0, Scene->getCurrentLayer()->laywid);
+
+    connect(Scene->getCurrentLayer()->laywid,&LayerWidget::onSetActive,this,&CanvasTab::onLayerSetActive);
+    connect(Scene->getCurrentLayer()->laywid,&LayerWidget::onVisibleChange,this,&CanvasTab::onLayerSetVisible);
+
+    for (auto& lay : Scene->getLayers())
+    {
+        lay->laywid->SetIsActive(false);
+
+
+    }
+
+    Scene->getCurrentLayer()->laywid->SetIsActive(true);
+
+
+}
+
+void CanvasTab::RefreshLayersList()
+{
+    // First, remove all widgets from the layout
+
+    for (auto& lay : Scene->getLayers())
+    {
+        ui->scraLayout->removeWidget(lay->laywid);
+
+
+    }
+
+    for (auto& lay : Scene->getLayers())
+    {
+        ui->scraLayout->insertWidget(0, lay->laywid);
+
+
+    }
+
+
+}
+
+
+
+CanvasTab::~CanvasTab()
+{
+    delete ui;
+}
+
+void CanvasTab::Preinitialize()
+{
+
+    if (!CuMdl->IsLoaded())
+        emit DemandModelLoad();
+
+    if (!Inferer)
+    {
+        Inferer = new CanvasInferer;
+        CurrentAsyncSrc = std::make_unique<Axodox::Threading::async_operation_source>();
+
+
+        Inferer->AsyncSrc = CurrentAsyncSrc.get();
+        Inferer->Model = CuMdl;
+        connect(Inferer, &CanvasInferer::Done, this, &CanvasTab::onImageDone);
+        connect(CuMdl, &StableDiffusionModel::PreviewAvailable, Inferer, &CanvasInferer::OnPreviewsAvailable);
+        connect(Inferer, &CanvasInferer::PreviewsAvailable, this, &CanvasTab::onGetPreviews);
+
+
+        Inferer->start();
+
+
+
+
+
+    }
+
+}
+
+void CanvasTab::on_btnBrush_clicked(bool checked)
+{
+    if (!checked){return;}
+
+    Scene->CurrentTool = DrawingTool::PenBrush;
+
+    ui->grpBrushOpts->setVisible(checked);
+    ui->grpFillBucketOptions->setVisible(!checked);
+
+}
+
+
+void CanvasTab::on_btnEraser_clicked(bool checked)
+{
+    if (!checked){return;}
+
+    Scene->CurrentTool = DrawingTool::Remover;
+
+    ui->grpBrushOpts->setVisible(checked);
+    ui->grpFillBucketOptions->setVisible(!checked);
+
+
+}
+
+
+void CanvasTab::on_btnFillBucket_clicked(bool checked)
+{
+    if (!checked){return;}
+
+    Scene->CurrentTool = DrawingTool::FillBucket;
+
+    ui->grpBrushOpts->setVisible(!checked);
+    ui->grpFillBucketOptions->setVisible(checked);
+
+}
+
+
+
+void CanvasTab::on_btnNewLayer_clicked()
+{
+    AddLayer("Layer");
+}
+
+
+void CanvasTab::on_btnRemoveLayer_clicked()
+{
+    Scene->deleteLayer(Scene->getCurrentLayer());
+}
+
+void CanvasTab::onLayerSetActive(bool act, LayerWidget *sendingWid)
+{
+    if (!act)
+        return;
+
+    Scene->selectLayer((Layer*)sendingWid->layer);
+
+
+
+}
+
+void CanvasTab::onLayerSetVisible(bool act, LayerWidget *sendingWid)
+{
+
+    ((Layer*)sendingWid->layer)->visible = act;
+
+    Scene->Render();
+
+}
+
+void CanvasTab::onPrimaryColorSelected(const QColor &col)
+{
+
+    Scene->ToolColors.first = col;
+
+}
+
+void CanvasTab::onSecondaryColorSelected(const QColor &col)
+{
+    Scene->ToolColors.second = col;
+
+}
+
+void CanvasTab::onBrushSizeChanged(int sz)
+{
+    ui->sliBrushSize->setValue(sz);
+
+}
+
+void CanvasTab::onImageDone(QImage img)
+{
+    // Ensure the QGraphicsView has a QGraphicsScene
+    if (ui->viewResult->scene() == nullptr) {
+        ui->viewResult->setScene(new QGraphicsScene(this));
+    }
+
+    // If the resultPixmapItem hasn't been created yet, create it
+    if (!resultPixmapItem) {
+        resultPixmapItem = new QGraphicsPixmapItem();
+        ui->viewResult->scene()->addItem(resultPixmapItem);
+    }
+
+    // Convert the QImage to QPixmap and set it on the resultPixmapItem
+    QPixmap pixmap = QPixmap::fromImage(img);
+    resultPixmapItem->setPixmap(pixmap);
+
+    // Optionally, resize the QGraphicsView's scene to fit the new image
+    ui->viewResult->scene()->setSceneRect(pixmap.rect());
+}
+
+void CanvasTab::onGetPreviews(std::vector<QImage> Imgs)
+{
+    onImageDone(Imgs[0]);
+
+}
+
+
+void CanvasTab::on_btnLayUp_clicked()
+{
+    Scene->moveLayerDown(Scene->getCurrentLayer());
+    RefreshLayersList();
+
+
+}
+
+
+void CanvasTab::on_btnLayerDown_clicked()
+{
+    Scene->moveLayerUp(Scene->getCurrentLayer());
+    RefreshLayersList();
+}
+
+void CanvasTab::on_sliBrushSize_sliderMoved(int position)
+{
+    Scene->setBrushSize(position, false);
+}
+
+
+void CanvasTab::on_horizontalSlider_sliderMoved(int position)
+{
+
+    Scene->Tolerance = ((float)position) / 100.f;
+}
+
+
+void CanvasTab::on_horizontalSlider_valueChanged(int value)
+{
+    ui->lblTolerance->setText(QString::number(value) + "%");
+}
+
+
+void CanvasTab::on_sliBrushSize_valueChanged(int value)
+{
+    ui->lblBrushSize->setText(QString::number(value));
+}
+
+
+void CanvasTab::on_btnRender_clicked()
+{
+    // Get the scene
+
+    Preinitialize();
+    QImage CanvasFull = Scene->Render().toImage();
+
+    CanvasOrder Ord;
+
+    Ord.BatchCount = 1;
+
+    Ord.InputImage = CanvasFull;
+    Ord.NegativePrompt = ui->edtNegPrompt->toPlainText();
+    Ord.Prompt = ui->edtPrompt->toPlainText();
+
+    auto CurrentOptions = ui->widPreviewConf->GetConfig();
+
+    Ord.Vae = (VaeMode)CurrentOptions.Vae;
+
+    Ord.Options.DenoisingStrength = ((float)ui->sliDenoiseStrength->value()) / 100.f;
+    Ord.Options.GuidanceScale = (float)ui->spbCFGScale->value();
+    QStringList WidthHeight = ui->ledtResolution->text().split("x");
+
+    Ord.Options.Height = WidthHeight[1].toInt(); Ord.Options.Width = WidthHeight[0].toInt();
+    Ord.Options.BatchSize = 1;
+    Ord.Options.Seed = ui->spbSeed->value();
+
+    Inferer->Queue.push(Ord);
+
+
+
+
+
+
+
+}
+

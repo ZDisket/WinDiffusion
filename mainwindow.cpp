@@ -13,6 +13,7 @@
 
 #include "pathwidgetitem.h"
 #include <QFileDialog>
+#include "canvastab.h"
 
 // Function to create "outputs" folder if it doesn't exist
 QString createOutputsFolder() {
@@ -85,6 +86,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     CurrentInferThrd = nullptr;
 
+
+    qRegisterMetaType< std::vector<Axodox::Graphics::TextureData> >("std::vector<Axodox::Graphics::TextureData>");
+    //qRegisterMetaType< std::vector<Axodox::Graphics::TextureData>& >("std::vector<Axodox::Graphics::TextureData>&");
+
     progressPoller = new QTimer(this); // Create the timer with MainWindow as the parent
     progressPoller->setInterval(100); // Set the timer interval to 100 ms
 
@@ -126,7 +131,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->lblLeftImg,&ClickableImageLabel::SendImageToImg2Img,this,&MainWindow::OnImageSendToImg2Img);
     connect(ui->lblLeftImg,&ClickableImageLabel::SendImageToUpscale,this,&MainWindow::OnImageSendToUpscale);
 
-    connect(&CurrentMdl, &StableDiffusionModel::PreviewAvailable, this, &MainWindow::OnPreviewsAvailable);
 
     UpdateUpscalerListing();
 
@@ -134,6 +138,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     CurrentGlobalPgb = ui->pgbAllGens;
 
+
+    canvasTab = new CanvasTab(this);
+    canvasTab->setWindowFlags(Qt::Widget);
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(canvasTab);
+    ui->tabwCanvas->setLayout(layout);
+
+    ((CanvasTab*)canvasTab)->CuMdl = &CurrentMdl;
+
+
+
+    connect((CanvasTab*)canvasTab, &CanvasTab::DemandModelLoad, this, &MainWindow::ModelLoadDemanded);
 
 }
 
@@ -300,10 +316,9 @@ void MainWindow::OnImageSendToUpscale(QImage *SndImg)
 
 }
 
-void MainWindow::OnPreviewsAvailable(std::vector<Axodox::Graphics::TextureData> Previews)
+void MainWindow::OnPreviewsAvailable(std::vector<QImage> Previews)
 {
-    QImage PreviewImage;
-    QtAxInterop::InterOpHelper::TextureDataToQImage(Previews[0],PreviewImage);
+    QImage& PreviewImage = Previews[0];
 
      ClickableImageLabel* Viewport = ui->lblLeftImg;
 
@@ -311,6 +326,12 @@ void MainWindow::OnPreviewsAvailable(std::vector<Axodox::Graphics::TextureData> 
         Viewport = ui->lblImg;
 
     Viewport->SetImagePreview(PreviewImage);
+
+}
+
+void MainWindow::ModelLoadDemanded()
+{
+    on_btnLoadModel_clicked();
 
 }
 
@@ -563,6 +584,12 @@ void MainWindow::IterateQueue()
     connect(InferThrd, &Inferer::ThreadFinished, this, &MainWindow::OnThreadDone);
 
 
+    /*
+     * previews go from model -> inferer (convert to qimage) -> window
+    */
+    connect(&CurrentMdl, &StableDiffusionModel::PreviewAvailable, InferThrd, &Inferer::OnPreviewsAvailable);
+    connect(InferThrd,&Inferer::PreviewsAvailable, this, &MainWindow::OnPreviewsAvailable);
+
     // Otherwise the thread lingers and causes a memory leak
     connect(InferThrd, &Inferer::finished, InferThrd, &QObject::deleteLater);
 
@@ -597,28 +624,23 @@ void MainWindow::UpdateModelListing()
     // Get the current executable's directory
     QDir appDir(QCoreApplication::applicationDirPath());
 
-    // Path to the "models" subfolder
     QDir modelsDir(appDir.absoluteFilePath("models"));
 
     // Check if the "models" folder exists
     if (!modelsDir.exists()) {
         LoadingFromModelsFolder = false;
         ui->edtModelPath->setEditable(!LoadingFromModelsFolder);
-        return; // Simply return if the "models" folder doesn't exist
+        return;
     }
 
-    // Set the QDir object to filter for directories only, excluding "." and ".."
     modelsDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    // Get the list of directories (folders) inside "models"
     QFileInfoList folders = modelsDir.entryInfoList();
 
-    // Clear existing items in the comboBox
     ui->edtModelPath->setCurrentText("");
     ui->edtModelPath->clear();
 
 
-    // Iterate over each folder and add its name to the comboBox
     foreach (const QFileInfo &folder, folders) {
         ui->edtModelPath->addItem(folder.fileName());
     }
@@ -628,28 +650,21 @@ void MainWindow::UpdateModelListing()
 }
 
 void MainWindow::UpdateUpscalerListing() {
-    // Get the current executable's directory
     QDir appDir(QCoreApplication::applicationDirPath());
 
-    // Path to the "upscalers" subfolder
     QDir upscalersDir(appDir.absoluteFilePath("upscalers"));
 
-    // Check if the "upscalers" folder exists
     if (!upscalersDir.exists()) {
         // Handle the case where the directory doesn't exist
-        // For example, disable the combo box or indicate the absence of models
         ui->cbUpscalerModels->setDisabled(true);
-        return; // Simply return if the "upscalers" folder doesn't exist
+        return;
     }
 
-    // Set the QDir object to filter for files with the .onnx extension
     upscalersDir.setNameFilters(QStringList() << "*.onnx");
     upscalersDir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
 
-    // Get the list of .onnx files inside "upscalers"
     QFileInfoList files = upscalersDir.entryInfoList();
 
-    // Clear existing items in the comboBox
     ui->cbUpscalerModels->setCurrentText("");
     ui->cbUpscalerModels->clear();
 
@@ -660,7 +675,6 @@ void MainWindow::UpdateUpscalerListing() {
         ui->cbUpscalerModels->addItem(modelName);
     }
 
-    // Optionally re-enable the combo box if it was disabled
     ui->cbUpscalerModels->setDisabled(false);
 
     // If needed, set the first item as the current selection
@@ -994,7 +1008,7 @@ void MainWindow::on_btnUpsBrowseFolder_clicked() {
 
 void MainWindow::on_btnAddBulkFolder_clicked() {
     // Clear the list widget to avoid duplicating items if the button is clicked multiple times
-    ui->lstInputBulkFiles->clear();
+    //ui->lstInputBulkFiles->clear();
 
     QString folderPath = ui->ledtBulkAddFolderPath->text();
 
@@ -1072,5 +1086,11 @@ void MainWindow::SetControls(bool Enabled)
     ui->btnGenerate->setEnabled(Enabled);
     ui->btnAddBulkFolder->setEnabled(Enabled);
 
+}
+
+
+void MainWindow::on_btnClearUpscaleAdds_clicked()
+{
+    ui->lstInputBulkFiles->clear();
 }
 

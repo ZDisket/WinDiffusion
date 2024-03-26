@@ -134,13 +134,12 @@ void Inferer::DoInference()
             return;
         }
 
-        int bytesPerPixel = 4; // 4 for RGBA, 3 for RGB
         QImage::Format format = QImage::Format_RGBA8888;
 
         for (auto& Buff : Buffs)
         {
 
-            QImage image(Buff.data(), Opts.Width, Opts.Height, Opts.Width * bytesPerPixel, format);
+            QImage image(Buff.data(), Opts.Width, Opts.Height, Opts.Width * BYTES_PER_PIXEL_RGBA, format);
 
 
             emit Done(image.copy(), CurrentJobType); // the .copy is VERY important!!!!! apparently QImage from buffer doesn't copy the data so the UI thread ends up trying to use invalid memory otherwise.
@@ -161,4 +160,20 @@ int32_t Inferer::GetStepsDone()
         return ((int32_t)std::round(AsyncSrc->state().progress)) * 100;
 
     return -1;
+}
+
+void Inferer::OnPreviewsAvailable(std::vector<Axodox::Graphics::TextureData> Previews)
+{
+
+    std::vector<QImage> ReEmit;
+    for (auto& Img : Previews)
+    {
+        QImage PreviewImage;
+        QtAxInterop::InterOpHelper::TextureDataToQImage(Img, PreviewImage);
+        ReEmit.push_back(PreviewImage);
+
+    }
+    emit PreviewsAvailable(ReEmit);
+
+
 }

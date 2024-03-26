@@ -120,7 +120,11 @@ Tensor StableDiffusionModel::RunInference(Axodox::MachineLearning::StableDiffusi
 
     image = UNet->FinishInference(Options, rawLatents, true, false);
 
-    image = VAE_D->DecodeVae(image);
+    if (CurrentVaeMode == VaeMode::Normal)
+        image = VAE_D->DecodeVae(image);
+    else
+        image = VAE_D_Tiny->DecodeVae(image);
+
 
     return image;
 }
@@ -184,6 +188,7 @@ bool StableDiffusionModel::Load(const std::string &ModelPath, const std::string&
     std::string TinyDecoderFn = isSDXL ? "taesdxl_decoder.onnx" : "taesd_decoder.onnx";
 
     VAE_D_Tiny = std::make_unique<VaeDecoder>(*Env, AuxiliaryPath + TinyDecoderFn);
+    CurrentVaeMode = VaeMode::Normal;
 
 
 
@@ -225,7 +230,9 @@ std::vector<Axodox::Collections::aligned_vector<uint8_t>> StableDiffusionModel::
 
     TextureData d;
 
-    auto ImageTextures = x.ToTextureData(ColorNormalization::LinearPlusMinusOne);
+    auto ImageTextures = x.ToTextureData(  // account for TAESD being different
+        CurrentVaeMode == VaeMode::Normal ? ColorNormalization::LinearPlusMinusOne : ColorNormalization::LinearZeroToOne
+     );
 
     for (auto& ImgTexture : ImageTextures ){
         auto ImageBuffer = ImgTexture.ToFormat(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB).Buffer; // ToBuffer() emits obscure D3D12 error because it's been shitting itself

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1399</width>
-    <height>980</height>
+    <width>1475</width>
+    <height>1039</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,7 +48,7 @@
     <item>
      <widget class="QTabWidget" name="tabsMain">
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -116,7 +116,7 @@ strokes</string>
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1111</width>
+                    <width>1187</width>
                     <height>85</height>
                    </rect>
                   </property>
@@ -994,14 +994,25 @@ image-&gt;Send to img2img/inpaint</string>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="chkSkipAlreadyUpscaled">
-                       <property name="text">
-                        <string>Skip already upscaled</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
+                      <layout class="QHBoxLayout" name="horizontalLayout_16">
+                       <item>
+                        <widget class="QCheckBox" name="chkSkipAlreadyUpscaled">
+                         <property name="text">
+                          <string>Skip already upscaled</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="btnClearUpscaleAdds">
+                         <property name="text">
+                          <string>Clear</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
                      </item>
                     </layout>
                    </widget>
@@ -1111,6 +1122,16 @@ image-&gt;Send to img2img/inpaint</string>
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>Canvas</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_20">
+        <item>
+         <widget class="QWidget" name="tabwCanvas" native="true"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -1120,7 +1141,7 @@ image-&gt;Send to img2img/inpaint</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1399</width>
+     <width>1475</width>
      <height>26</height>
     </rect>
    </property>

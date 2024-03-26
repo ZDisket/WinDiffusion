@@ -50,6 +50,11 @@ signals:
     void DoneBulk(QImage Img, std::string OutputPath, QListWidgetItem* Itm);
     void Done(QImage Img, StableDiffusionJobType JobType);
     void ThreadFinished();
+    void PreviewsAvailable(std::vector<QImage> Prevs);
+
+public slots:
+    void OnPreviewsAvailable(std::vector<Axodox::Graphics::TextureData> Previews);
+
 };
 
 #endif // INFERER_H

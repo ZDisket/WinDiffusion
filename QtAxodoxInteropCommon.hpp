@@ -8,6 +8,8 @@
 
 namespace QtAxInterop{
 
+const int BYTES_PER_PIXEL_RGBA = 4;
+
 /*
 If I just use a namespace I get symbol already defined errors, but not if I use a class
 On older versions of VC++(17) I could use just a namespace no problem for this stuff.

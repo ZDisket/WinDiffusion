@@ -2,6 +2,14 @@
 #define STABLEDIFFUSIONMODEL_H
 #include "Include/Axodox.MachineLearning.h"
 #include <QObject>
+
+enum class VaeMode{
+    Normal = 0,
+    Tiny
+};
+
+
+
 class StableDiffusionModel : public QObject // We only use QObject for the signals, the class is made to be portable.
 {
     Q_OBJECT
@@ -18,6 +26,7 @@ private:
     Axodox::MachineLearning::StableDiffusionSchedulerPredictionType PredictionType;
 
     bool Loaded;
+    VaeMode CurrentVaeMode;
 
     void GetPredictionType(const std::string& ModelPath);
     void CreateTextEmbeddings(const std::string& PosPrompt, const std::string& NegPrompt, Axodox::MachineLearning::StableDiffusionOptions& Options, Axodox::MachineLearning::ScheduledTensor* SchTensor);
@@ -40,6 +49,10 @@ public:
     inline bool IsLoaded() const {return Loaded;}
     inline Axodox::MachineLearning::OnnxEnvironment* GetEnv() {return Env.get();}
     void LoadMinimal();
+
+    inline void SetVaeMode(VaeMode in) {CurrentVaeMode = in;};
+
+
 
     ~StableDiffusionModel();
 

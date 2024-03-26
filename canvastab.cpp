@@ -3,8 +3,10 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include "QtAxodoxInteropCommon.hpp"
+
 using namespace color_widgets;
 using namespace QtAxInterop;
+
 CanvasTab::CanvasTab(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::CanvasTab)
@@ -19,7 +21,6 @@ CanvasTab::CanvasTab(QWidget *parent)
     Inferer = nullptr;
 
     ui->grpFillBucketOptions->hide();
-
 
 
 
@@ -62,6 +63,12 @@ void CanvasTab::SetupCanvas()
     ui->viewResult->needsControlScroll = false;
     resultPixmapItem = nullptr;
 
+
+}
+
+void CanvasTab::onUndo(bool checked)
+{
+    Scene->undo();
 
 }
 
@@ -140,6 +147,15 @@ void CanvasTab::Preinitialize()
 
 
     }
+
+}
+
+QWidget *CanvasTab::GetCurrentConfigWidget()
+{
+    if (ui->rbConfFinal->isChecked())
+        return ui->widFinalConf;
+
+    return ui->widPreviewConf;
 
 }
 
@@ -244,11 +260,9 @@ void CanvasTab::onImageDone(QImage img)
         ui->viewResult->scene()->addItem(resultPixmapItem);
     }
 
-    // Convert the QImage to QPixmap and set it on the resultPixmapItem
     QPixmap pixmap = QPixmap::fromImage(img);
     resultPixmapItem->setPixmap(pixmap);
 
-    // Optionally, resize the QGraphicsView's scene to fit the new image
     ui->viewResult->scene()->setSceneRect(pixmap.rect());
 }
 
@@ -314,7 +328,8 @@ void CanvasTab::on_btnRender_clicked()
     Ord.NegativePrompt = ui->edtNegPrompt->toPlainText();
     Ord.Prompt = ui->edtPrompt->toPlainText();
 
-    auto CurrentOptions = ui->widPreviewConf->GetConfig();
+
+    auto CurrentOptions = ((RenderConfigForm*)GetCurrentConfigWidget())->GetConfig();
 
     Ord.Vae = (VaeMode)CurrentOptions.Vae;
     Ord.Options.StepCount = CurrentOptions.NumSteps;

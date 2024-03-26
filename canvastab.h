@@ -18,6 +18,8 @@ class CanvasTab : public QMainWindow
 public:
     StableDiffusionModel* CuMdl;
 
+
+
     explicit CanvasTab(QWidget *parent = nullptr);
     ~CanvasTab();
 
@@ -36,13 +38,22 @@ private:
 
 
 
+    // Please cast the result to RenderConfigForm* because I don't feel like including it in the header.
+    // Thank you.
+    QWidget* GetCurrentConfigWidget();
 
     void AddLayer(const QString &layname, const QColor &col = Qt::transparent);
     void RefreshLayersList();
     void SetupColorWidgets();
     void SetupCanvas();
 
+
+public slots:
+    void onUndo(bool checked);
+
 protected slots:
+
+
     void onLayerSetActive(bool act, LayerWidget* sendingWid);
     void onLayerSetVisible(bool act, LayerWidget* sendingWid);
 

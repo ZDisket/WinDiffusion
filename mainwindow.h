@@ -45,6 +45,8 @@ public:
 
     QGoodWindow* ParentGoodWin;
 
+    bool IsExiting(){return Exiting;};
+
 public slots:
     void OnImageDone(QImage InImg, StableDiffusionJobType JobType);
     void OnBulkImageDone(QImage InImg, std::string OutputPath, QListWidgetItem *Itm);
@@ -114,6 +116,8 @@ private slots:
 
     void on_btnClearUpscaleAdds_clicked();
 
+    void on_actUndo_triggered();
+
 private:
 
     void SetControls(bool Enabled);
@@ -141,6 +145,7 @@ private:
     void OpenDirectory(const QString& dir);
 
 private:
+    bool Exiting = false;
     QTimer* progressPoller; // QTimer object
     std::unique_ptr<Axodox::Threading::async_operation_source> CurrentAsyncSrc;
     QString OutpsDir;

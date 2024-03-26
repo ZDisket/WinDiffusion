@@ -13,7 +13,6 @@
 #include <QImageReader>
 
 ClickableImageLabel::ClickableImageLabel(QWidget *parent) : QLabel(parent) {
-    // You can initialize your label here if needed
     OriginalImage = nullptr;
     pToOriginalFilePath = nullptr;
 

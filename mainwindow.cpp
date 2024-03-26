@@ -157,6 +157,7 @@ MainWindow::~MainWindow()
 {
     on_actionClear_current_outputs_2_triggered();
     CurrentMdl.Destroy();
+    Exiting = true;
 
     try {
         delete ui;
@@ -1090,5 +1091,11 @@ void MainWindow::SetControls(bool Enabled)
 void MainWindow::on_btnClearUpscaleAdds_clicked()
 {
     ui->lstInputBulkFiles->clear();
+}
+
+
+void MainWindow::on_actUndo_triggered()
+{
+    ((CanvasTab*)canvasTab)->onUndo(true);
 }
 

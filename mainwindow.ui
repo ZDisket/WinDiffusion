@@ -1161,6 +1161,7 @@ image-&gt;Send to img2img/inpaint</string>
     <addaction name="actionScroll_Left"/>
     <addaction name="actionScroll_Right"/>
     <addaction name="actionClear_current_outputs_2"/>
+    <addaction name="actUndo"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1232,6 +1233,17 @@ image-&gt;Send to img2img/inpaint</string>
    </property>
    <property name="shortcut">
     <string>F1</string>
+   </property>
+  </action>
+  <action name="actUndo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="toolTip">
+    <string>Undo (for Canvas)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
    </property>
   </action>
  </widget>

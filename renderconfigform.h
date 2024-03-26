@@ -16,7 +16,7 @@ enum VaeSel{
 
 struct RenderConfig{
     uint32_t NumSteps;
-    QString Sampler;
+    int32_t Sampler;
     VaeSel Vae;
 };
 

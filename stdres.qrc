@@ -9,5 +9,9 @@
         <file>res/white460.png</file>
         <file>res/white512.png</file>
         <file>res/chevrons.png</file>
+        <file>res/canvas/camera32.png</file>
+        <file>res/canvas/eye32.png</file>
+        <file>res/canvas/camera32off.png</file>
+        <file>res/canvas/eye32off.png</file>
     </qresource>
 </RCC>

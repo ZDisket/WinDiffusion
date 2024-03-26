@@ -2,9 +2,9 @@
 #include "ui_canvastab.h"
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
-
+#include "QtAxodoxInteropCommon.hpp"
 using namespace color_widgets;
-
+using namespace QtAxInterop;
 CanvasTab::CanvasTab(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::CanvasTab)
@@ -304,7 +304,7 @@ void CanvasTab::on_btnRender_clicked()
     // Get the scene
 
     Preinitialize();
-    QImage CanvasFull = Scene->Render().toImage();
+    QImage CanvasFull = Scene->Render(true).toImage();
 
     CanvasOrder Ord;
 
@@ -317,8 +317,10 @@ void CanvasTab::on_btnRender_clicked()
     auto CurrentOptions = ui->widPreviewConf->GetConfig();
 
     Ord.Vae = (VaeMode)CurrentOptions.Vae;
+    Ord.Options.StepCount = CurrentOptions.NumSteps;
+    Ord.Options.Scheduler = InterOpHelper::ComboBoxIDToScheduler()[CurrentOptions.Sampler];
 
-    Ord.Options.DenoisingStrength = ((float)ui->sliDenoiseStrength->value()) / 100.f;
+    Ord.Options.DenoisingStrength = InterOpHelper::SliderToZeroOneRange(ui->sliDenoiseStrength->value());
     Ord.Options.GuidanceScale = (float)ui->spbCFGScale->value();
     QStringList WidthHeight = ui->ledtResolution->text().split("x");
 

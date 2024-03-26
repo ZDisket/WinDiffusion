@@ -28,6 +28,7 @@ class Layer {
 public:
     QPixmap pixmap;
     bool visible = true;
+    bool renderable = true;
     qreal opacity = 1.0;
     QString name = "Layer";
     LayerWidget* laywid;
@@ -113,7 +114,7 @@ public: // Events
 
 
 public: // Fucntions
-    QPixmap& Render();
+    QPixmap& Render(bool final = false);
     void Initialize(QSize inSz);
     void takeSnapshot();
     void undo();

@@ -252,7 +252,7 @@ void DrawingScene::drawLineTo(const QPointF& endPoint, const QColor& color)
     Render();
 }
 
-QPixmap& DrawingScene::Render()
+QPixmap& DrawingScene::Render(bool final)
 {
 
     if (basePixmap.isNull())
@@ -287,6 +287,12 @@ QPixmap& DrawingScene::Render()
             continue;
         }
 
+        if (final && !lay->renderable)
+        {
+            it = std::next(it);
+            continue;
+        }
+
 
         painter.setOpacity(lay->opacity);
         painter.drawPixmap(0,0, *lay);
@@ -295,10 +301,15 @@ QPixmap& DrawingScene::Render()
 
     }
 
-    pixmapItem->setPixmap(basePixmap); // Display the merged image
+    if (!final)
+    {
 
-    update();
-    pixmapItem->update();
+        pixmapItem->setPixmap(basePixmap); // Display the merged image
+
+        update();
+        pixmapItem->update();
+    }
+
 
     return basePixmap;
 }

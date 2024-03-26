@@ -21,7 +21,7 @@ RenderConf::RenderConfig RenderConfigForm::GetConfig()
     RenderConfig Rend;
 
     Rend.NumSteps = ui->spbnSteps->value();
-    Rend.Sampler = ui->cbSampler->currentText();
+    Rend.Sampler = ui->cbSampler->currentIndex();
     Rend.Vae = ui->rbFullVae->isChecked() ? VaeSel::Normal : VaeSel::Tiny;
 
     return Rend;

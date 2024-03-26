@@ -1,6 +1,13 @@
 #include "layerwidget.h"
 #include "ui_layerwidget.h"
 #include "drawingscene.h"
+#include "layersettingsdialog.h"
+#include "QtAxodoxInteropCommon.hpp"
+
+using namespace QtAxInterop;
+
+#define GETLAYER ((Layer*)layer)
+
 
 LayerWidget::LayerWidget(QWidget *parent)
     : QWidget(parent)
@@ -30,6 +37,9 @@ bool LayerWidget::eventFilter(QObject *watched, QEvent *event) {
             SetIsActive(!isActive);
             // Change the border color to deep blue when active
             ui->frame->setStyleSheet("QFrame { border: 2px solid blue; }");
+            break;
+        case QEvent::MouseButtonDblClick:
+            onDoubleClick();
             break;
         default:
             break;
@@ -72,4 +82,52 @@ void LayerWidget::on_btnVisible_clicked(bool checked)
 {
     emit onVisibleChange(checked, this);
 }
+
+
+void LayerWidget::on_btnRenderable_clicked(bool checked)
+{
+    GETLAYER->renderable = checked;
+    emit onRenderableChange(checked, this);
+
+}
+
+
+void LayerWidget::onDoubleClick()
+{
+    LayerSettingsDialog dialog(this);
+
+    dialog.settings.name = ui->lblLayerName->text();
+    dialog.settings.render = ui->btnRenderable->isChecked();
+    dialog.settings.opacity = InterOpHelper::ZeroOneToSliderRange(GETLAYER->opacity);
+    dialog.settings.visible = ui->btnVisible->isChecked();
+
+    dialog.Update();
+
+
+
+
+    int result = dialog.exec();
+
+    if (result != QDialog::Accepted)
+        return;
+
+    GETLAYER->name = dialog.settings.name;
+    GETLAYER->opacity = InterOpHelper::SliderToZeroOneRange(dialog.settings.opacity);
+
+
+
+    ui->lblLayerName->setText(dialog.settings.name);
+    ui->btnRenderable->setChecked(dialog.settings.render);
+    ui->btnVisible->setChecked(dialog.settings.visible);
+
+    // This is important because it triggers a rerender, in case the opacity/visibility was changed.
+    on_btnVisible_clicked(dialog.settings.visible);
+    on_btnRenderable_clicked(dialog.settings.render);
+
+    // Reset active
+    SetIsActive(true);
+
+
+}
+
 

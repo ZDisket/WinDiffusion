@@ -412,7 +412,6 @@ void MainWindow::OnTopBarClick(size_t LblIndex)
 
 }
 
-std::vector<Axodox::MachineLearning::StableDiffusionSchedulerKind> ComboBoxIDToScheduler = {Axodox::MachineLearning::StableDiffusionSchedulerKind::DpmPlusPlus2M , Axodox::MachineLearning::StableDiffusionSchedulerKind::EulerAncestral};
 
 void MainWindow::on_btnGenerate_clicked()
 {
@@ -436,8 +435,7 @@ void MainWindow::on_btnGenerate_clicked()
 
     if (ui->chkImg2Img->isChecked())
     {
-        float BaseDenStrength = (float)ui->sliDenoiseStrength->value();
-        Options.DenoisingStrength = BaseDenStrength / 100.f;
+        Options.DenoisingStrength = QtAxInterop::InterOpHelper::SliderToZeroOneRange(ui->sliDenoiseStrength->value());
 
 
     }
@@ -448,7 +446,7 @@ void MainWindow::on_btnGenerate_clicked()
     else
         Options.Seed = ui->edtSeed->text().toUInt();
 
-    Options.Scheduler = ComboBoxIDToScheduler[ui->cbSampler->currentIndex()];
+    Options.Scheduler = QtAxInterop::InterOpHelper::ComboBoxIDToScheduler()[ui->cbSampler->currentIndex()];
 
 
 

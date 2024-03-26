@@ -17,6 +17,7 @@ SOURCES += \
     canvas/drawgraphicsview.cpp \
     canvas/drawingscene.cpp \
     canvas/drawpixmapitem.cpp \
+    canvas/layersettingsdialog.cpp \
     canvas/layerwidget.cpp \
     canvasinferer.cpp \
     canvastab.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     canvas/drawgraphicsview.h \
     canvas/drawingscene.h \
     canvas/drawpixmapitem.h \
+    canvas/layersettingsdialog.h \
     canvas/layerwidget.h \
     canvasinferer.h \
     canvastab.h \
@@ -60,6 +62,7 @@ HEADERS += \
     upscaler.h
 
 FORMS += \
+    canvas/layersettingsdialog.ui \
     canvas/layerwidget.ui \
     canvastab.ui \
     mainwindow.ui \

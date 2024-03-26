@@ -63,12 +63,39 @@
       </item>
       <item>
        <widget class="QToolButton" name="btnVisible">
+        <property name="toolTip">
+         <string>Should this layer be visible?</string>
+        </property>
         <property name="text">
          <string>...</string>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>ey.png</normaloff>ey.png</iconset>
+         <iconset resource="../stdres.qrc">
+          <normaloff>:/res/canvas/eye32off.png</normaloff>
+          <normalon>:/res/canvas/eye32.png</normalon>
+          <activeoff>:/res/canvas/eye32off.png</activeoff>
+          <selectedoff>:/res/canvas/eye32off.png</selectedoff>:/res/canvas/eye32off.png</iconset>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="btnRenderable">
+        <property name="toolTip">
+         <string>Should this layer appear in render?</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../stdres.qrc">
+          <normaloff>:/res/canvas/camera32off.png</normaloff>
+          <normalon>:/res/canvas/camera32.png</normalon>:/res/canvas/camera32off.png</iconset>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -96,6 +123,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../stdres.qrc"/>
+ </resources>
  <connections/>
 </ui>

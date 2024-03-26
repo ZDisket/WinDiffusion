@@ -118,7 +118,7 @@ Tensor StableDiffusionModel::RunInference(Axodox::MachineLearning::StableDiffusi
 
     }
 
-    image = UNet->FinishInference(Options, rawLatents, true, false);
+    image = UNet->FinishInference(Options, rawLatents, true, CurrentVaeMode == VaeMode::Tiny);
 
     if (CurrentVaeMode == VaeMode::Normal)
         image = VAE_D->DecodeVae(image);

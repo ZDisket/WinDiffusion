@@ -6,9 +6,15 @@
 
 #include <QImage>
 
+
+
+
 namespace QtAxInterop{
 
+using SDSchedulerT = Axodox::MachineLearning::StableDiffusionSchedulerKind;
 const int BYTES_PER_PIXEL_RGBA = 4;
+
+
 
 /*
 If I just use a namespace I get symbol already defined errors, but not if I use a class
@@ -19,6 +25,18 @@ class InterOpHelper
     InterOpHelper(){};
 
 public:
+
+    static std::vector<SDSchedulerT> ComboBoxIDToScheduler(){
+        return std::vector<SDSchedulerT>{SDSchedulerT::DpmPlusPlus2M , SDSchedulerT::EulerAncestral};
+        };
+
+
+        // Convert a 0-100 int slider range to 0 - 1.f float range.
+        static float SliderToZeroOneRange(int slival) {return ((float)slival) / 100.f;};
+
+        // Convert a 0 - 1.f float range to 0-100 int slider range.
+        static int   ZeroOneToSliderRange(float frange) {return (int)(frange * 100.f);};
+
 
     /*
      *

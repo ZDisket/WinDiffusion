@@ -28,12 +28,17 @@ public:
 signals:
     void onSetActive(bool act, LayerWidget* sending);
     void onVisibleChange(bool vis, LayerWidget* sending);
+    void onRenderableChange(bool rend, LayerWidget* sending);
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 private slots:
     void on_btnVisible_clicked(bool checked);
 
+    void on_btnRenderable_clicked(bool checked);
+
 private:
+    void onDoubleClick();
+
     Ui::LayerWidget *ui;
     bool isActive;
 };

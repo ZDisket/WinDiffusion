@@ -26,6 +26,11 @@ void CanvasInferer::ProcessOrder(CanvasOrder &Ord)
 
     InterOpHelper::QImageToTextureData(ScaledImage, TexDat);
 
+    // Prepare settings
+
+    // Using the Tiny VAE encoder results in too much quality deteoriation and result deviation (this one especially is really bad!)
+    Model->SetVaeMode(VaeMode::Normal);
+
 
     try {
         Opts.LatentInput = Model->EncodeImageVAE(TexDat);
@@ -50,10 +55,10 @@ void CanvasInferer::ProcessOrder(CanvasOrder &Ord)
     }
 
 
+
     // Prepare settings
 
     Model->SetVaeMode(Ord.Vae);
-
 
     for (uint32_t i = 0; i < Ord.BatchCount;i++)
     {

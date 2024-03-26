@@ -20,8 +20,11 @@ private:
     std::unique_ptr<Axodox::MachineLearning::VaeDecoder> VAE_D;
     std::unique_ptr<Axodox::MachineLearning::VaeEncoder> VAE_E;
     std::unique_ptr<Axodox::MachineLearning::VaeDecoder> VAE_D_Tiny;
+    std::unique_ptr<Axodox::MachineLearning::VaeEncoder> VAE_E_Tiny;
     std::unique_ptr<Axodox::MachineLearning::OnnxEnvironment> Env;
     ID3D12Debug* debugController;
+
+    std::string FullTinyEncoderPath;
 
     Axodox::MachineLearning::StableDiffusionSchedulerPredictionType PredictionType;
 
@@ -33,7 +36,8 @@ private:
 
     Axodox::MachineLearning::Tensor RunInference( Axodox::MachineLearning::StableDiffusionOptions& Options, Axodox::Threading::async_operation_source* OpSrc = nullptr);
 
-    void LoadVAEEncoder();
+
+    void LoadVAEEncoder(bool TinyToo = false);
 public:
     StableDiffusionModel();
 

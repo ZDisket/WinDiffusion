@@ -1161,7 +1161,9 @@ image-&gt;Send to img2img/inpaint</string>
     <addaction name="actionScroll_Left"/>
     <addaction name="actionScroll_Right"/>
     <addaction name="actionClear_current_outputs_2"/>
+    <addaction name="separator"/>
     <addaction name="actUndo"/>
+    <addaction name="actRender"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1244,6 +1246,17 @@ image-&gt;Send to img2img/inpaint</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actRender">
+   <property name="text">
+    <string>Render (Canvas)</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
    </property>
   </action>
  </widget>

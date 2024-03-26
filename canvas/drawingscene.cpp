@@ -64,6 +64,7 @@ void DrawingScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         isDrawing = false;
 
         currentLayer->Update();
+        emit Updated();
 
     }
     QGraphicsScene::mouseReleaseEvent(event);
@@ -308,6 +309,8 @@ QPixmap& DrawingScene::Render(bool final)
 
         update();
         pixmapItem->update();
+
+
     }
 
 

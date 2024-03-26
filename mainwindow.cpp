@@ -339,6 +339,9 @@ void MainWindow::ModelLoadDemanded()
 
 void MainWindow::OnProgressPoll()
 {
+    if (ui->tabsMain->currentIndex()  == 2)
+        ((CanvasTab*)canvasTab)->onProgressPoll();
+
     if (!CurrentPgb)
         return;
 
@@ -1097,5 +1100,11 @@ void MainWindow::on_btnClearUpscaleAdds_clicked()
 void MainWindow::on_actUndo_triggered()
 {
     ((CanvasTab*)canvasTab)->onUndo(true);
+}
+
+
+void MainWindow::on_actRender_triggered()
+{
+    ((CanvasTab*)canvasTab)->on_btnRender_clicked();
 }
 

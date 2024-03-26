@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "canvas/drawingscene.h"
 #include <QtColorWidgets/ColorSelector>
-
+#include <QTimer>
 
 #include "canvasinferer.h"
 namespace Ui {
@@ -24,6 +24,7 @@ public:
     ~CanvasTab();
 
 private:
+    QTimer* progressPoller;
 
     void Preinitialize();
 
@@ -36,6 +37,11 @@ private:
 
     QGraphicsPixmapItem* resultPixmapItem; // Renamed member variable
 
+    bool Busy = false;
+
+    // For live preview;
+    bool RenderAgain = false;
+
 
 
     // Please cast the result to RenderConfigForm* because I don't feel like including it in the header.
@@ -46,14 +52,18 @@ private:
     void RefreshLayersList();
     void SetupColorWidgets();
     void SetupCanvas();
+    void SetResult(QImage& img);
 
 
 public slots:
     void onUndo(bool checked);
+    void on_btnRender_clicked();
+    void onProgressPoll();
 
 protected slots:
 
 
+    void onCanvasUpdated();
     void onLayerSetActive(bool act, LayerWidget* sendingWid);
     void onLayerSetVisible(bool act, LayerWidget* sendingWid);
 
@@ -78,7 +88,9 @@ private slots:
     void on_horizontalSlider_sliderMoved(int position);
     void on_horizontalSlider_valueChanged(int value);
     void on_sliBrushSize_valueChanged(int value);
-    void on_btnRender_clicked();
+
+    void on_btnLivePreview_clicked(bool checked);
+
 signals:
     void DemandModelLoad();
 };

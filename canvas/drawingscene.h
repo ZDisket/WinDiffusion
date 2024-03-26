@@ -167,5 +167,6 @@ private:
 
 signals:
     void brushSizeChanged(int sz);
+    void Updated();
 };
 

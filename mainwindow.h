@@ -118,6 +118,8 @@ private slots:
 
     void on_actUndo_triggered();
 
+    void on_actRender_triggered();
+
 private:
 
     void SetControls(bool Enabled);

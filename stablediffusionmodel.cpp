@@ -129,9 +129,13 @@ Tensor StableDiffusionModel::RunInference(Axodox::MachineLearning::StableDiffusi
     return image;
 }
 
-void StableDiffusionModel::LoadVAEEncoder()
+void StableDiffusionModel::LoadVAEEncoder(bool TinyToo)
 {
     VAE_E = std::make_unique<VaeEncoder>(*Env);
+
+    if (TinyToo)
+        VAE_E_Tiny = std::make_unique<VaeEncoder>(*Env, FullTinyEncoderPath);
+
 
 }
 
@@ -188,6 +192,13 @@ bool StableDiffusionModel::Load(const std::string &ModelPath, const std::string&
     std::string TinyDecoderFn = isSDXL ? "taesdxl_decoder.onnx" : "taesd_decoder.onnx";
 
     VAE_D_Tiny = std::make_unique<VaeDecoder>(*Env, AuxiliaryPath + TinyDecoderFn);
+
+    std::string TinyEncoderFn = isSDXL ? "taesdxl_encoder.onnx" : "taesd_encoder.onnx";
+
+    // Unlike the tiny decoder, the tiny encoder's name is merely saved to be loaded on-demand.
+    FullTinyEncoderPath = AuxiliaryPath + TinyEncoderFn;
+
+
     CurrentVaeMode = VaeMode::Normal;
 
 
@@ -200,13 +211,20 @@ bool StableDiffusionModel::Load(const std::string &ModelPath, const std::string&
 
 Tensor StableDiffusionModel::EncodeImageVAE(const Axodox::Graphics::TextureData& TexData)
 {
+    bool useTinyVae = CurrentVaeMode == VaeMode::Tiny;
 
-    if (!VAE_E)
-        LoadVAEEncoder();
+    if ((!VAE_E) || (useTinyVae && !VAE_E_Tiny))
+        LoadVAEEncoder(useTinyVae);
 
 
-    Tensor InpTexTens = Tensor::FromTextureData(TexData.ToFormat(DXGI_FORMAT_B8G8R8A8_UNORM_SRGB), ColorNormalization::LinearPlusMinusOne);
-    return VAE_E->EncodeVae(InpTexTens);
+    Tensor InpTexTens = Tensor::FromTextureData(TexData.ToFormat(DXGI_FORMAT_B8G8R8A8_UNORM_SRGB),
+                                                useTinyVae ? ColorNormalization::LinearZeroToOne : ColorNormalization::LinearPlusMinusOne);
+
+    if (!useTinyVae)
+        return VAE_E->EncodeVae(InpTexTens);
+    else
+        return VAE_E_Tiny->EncodeVae(InpTexTens);
+
 
 }
 

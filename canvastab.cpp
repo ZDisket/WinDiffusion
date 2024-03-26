@@ -22,6 +22,13 @@ CanvasTab::CanvasTab(QWidget *parent)
 
     ui->grpFillBucketOptions->hide();
 
+  //  progressPoller = new QTimer(this); // Create the timer with MainWindow as the parent
+  //  progressPoller->setInterval(100); // Set the timer interval to 100 ms
+
+    // Connect the timeout signal of the timer to the OnProgressPoll slot
+//    connect(progressPoller, &QTimer::timeout, this, &CanvasTab::onProgressPoll);
+
+
 
 
 }
@@ -59,6 +66,7 @@ void CanvasTab::SetupCanvas()
     Scene->ToolColors = std::pair<QColor, QColor>(selPrimColor->color(), selSecondColor->color());
 
     connect(Scene, &DrawingScene::brushSizeChanged, this, &CanvasTab::onBrushSizeChanged);
+    connect(Scene, &DrawingScene::Updated, this, &CanvasTab::onCanvasUpdated);
 
     ui->viewResult->needsControlScroll = false;
     resultPixmapItem = nullptr;
@@ -66,9 +74,46 @@ void CanvasTab::SetupCanvas()
 
 }
 
+void CanvasTab::SetResult(QImage &img)
+{
+    // Ensure the QGraphicsView has a QGraphicsScene
+    if (ui->viewResult->scene() == nullptr) {
+        ui->viewResult->setScene(new QGraphicsScene(this));
+    }
+
+    // If the resultPixmapItem hasn't been created yet, create it
+    if (!resultPixmapItem) {
+        resultPixmapItem = new QGraphicsPixmapItem();
+        ui->viewResult->scene()->addItem(resultPixmapItem);
+    }
+
+    QPixmap pixmap = QPixmap::fromImage(img);
+    resultPixmapItem->setPixmap(pixmap);
+
+    ui->viewResult->scene()->setSceneRect(pixmap.rect());
+}
+
 void CanvasTab::onUndo(bool checked)
 {
     Scene->undo();
+
+}
+
+void CanvasTab::onProgressPoll()
+{
+    if (!CurrentAsyncSrc)
+        return;
+
+    ui->pgbRenderProgress->setValue((int32_t)(CurrentAsyncSrc->state().progress * 100.f));
+}
+
+void CanvasTab::onCanvasUpdated()
+{
+    RenderAgain = true;
+
+    if (!Busy && ui->btnLivePreview->isChecked())
+        on_btnRender_clicked();
+
 
 }
 
@@ -249,26 +294,17 @@ void CanvasTab::onBrushSizeChanged(int sz)
 
 void CanvasTab::onImageDone(QImage img)
 {
-    // Ensure the QGraphicsView has a QGraphicsScene
-    if (ui->viewResult->scene() == nullptr) {
-        ui->viewResult->setScene(new QGraphicsScene(this));
-    }
+    Busy = false;
+    SetResult(img);
 
-    // If the resultPixmapItem hasn't been created yet, create it
-    if (!resultPixmapItem) {
-        resultPixmapItem = new QGraphicsPixmapItem();
-        ui->viewResult->scene()->addItem(resultPixmapItem);
-    }
+    if (RenderAgain && ui->btnLivePreview->isChecked())
+        on_btnRender_clicked();
 
-    QPixmap pixmap = QPixmap::fromImage(img);
-    resultPixmapItem->setPixmap(pixmap);
-
-    ui->viewResult->scene()->setSceneRect(pixmap.rect());
 }
 
 void CanvasTab::onGetPreviews(std::vector<QImage> Imgs)
 {
-    onImageDone(Imgs[0]);
+    SetResult(Imgs[0]);
 
 }
 
@@ -344,6 +380,8 @@ void CanvasTab::on_btnRender_clicked()
     Ord.Options.Seed = ui->spbSeed->value();
 
     Inferer->Queue.push(Ord);
+    Busy = true;
+    RenderAgain = false;
 
 
 
@@ -351,5 +389,12 @@ void CanvasTab::on_btnRender_clicked()
 
 
 
+}
+
+
+void CanvasTab::on_btnLivePreview_clicked(bool checked)
+{
+    if (checked && !Busy)
+        on_btnRender_clicked();
 }
 

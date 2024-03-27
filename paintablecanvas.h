@@ -6,6 +6,9 @@
 #include <QMouseEvent>
 #include <QPainter>
 
+/*
+Not related to WinDiffusion Canvas; this is just for simple inpainting.
+*/
 class PaintableCanvas : public QWidget {
     Q_OBJECT
 

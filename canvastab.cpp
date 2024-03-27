@@ -118,7 +118,7 @@ void CanvasTab::onCanvasUpdated()
     RenderAgain = true;
 
     if (!Busy && ui->btnLivePreview->isChecked())
-        on_btnRender_clicked();
+        DoRender(true);
 
 
 }
@@ -198,6 +198,44 @@ void CanvasTab::Preinitialize()
 
 
     }
+
+}
+
+void CanvasTab::DoRender(bool forcePreview)
+{
+    Preinitialize();
+
+
+    // Get the scene
+    QImage CanvasFull = Scene->Render(true).toImage();
+    CanvasOrder Ord;
+
+
+    Ord.BatchCount = 1;
+
+    Ord.InputImage = CanvasFull;
+    Ord.NegativePrompt = ui->edtNegPrompt->toPlainText();
+    Ord.Prompt = ui->edtPrompt->toPlainText();
+
+
+    auto CurrentOptions = forcePreview ? ui->widPreviewConf->GetConfig() : ((RenderConfigForm*)GetCurrentConfigWidget())->GetConfig();
+
+    Ord.Vae = (VaeMode)CurrentOptions.Vae;
+    Ord.Options.StepCount = CurrentOptions.NumSteps;
+    Ord.Options.Scheduler = InterOpHelper::ComboBoxIDToScheduler()[CurrentOptions.Sampler];
+
+    Ord.Options.DenoisingStrength = InterOpHelper::SliderToZeroOneRange(ui->sliDenoiseStrength->value());
+    Ord.Options.GuidanceScale = (float)ui->spbCFGScale->value();
+    QStringList WidthHeight = ui->ledtResolution->text().split("x");
+
+    Ord.Options.Height = WidthHeight[1].toInt(); Ord.Options.Width = WidthHeight[0].toInt();
+    Ord.Options.BatchSize = 1;
+    Ord.Options.Seed = ui->spbSeed->value();
+
+    Inferer->Queue.push(Ord);
+
+    Busy = true;
+    RenderAgain = false;
 
 }
 
@@ -304,7 +342,7 @@ void CanvasTab::onImageDone(QImage img)
     SetResult(img);
 
     if (RenderAgain && ui->btnLivePreview->isChecked())
-        on_btnRender_clicked();
+        DoRender(true);
 
 }
 
@@ -357,43 +395,8 @@ void CanvasTab::on_sliBrushSize_valueChanged(int value)
 
 void CanvasTab::on_btnRender_clicked()
 {
-    // Get the scene
 
-    Preinitialize();
-    QImage CanvasFull = Scene->Render(true).toImage();
-
-    CanvasOrder Ord;
-
-    Ord.BatchCount = 1;
-
-    Ord.InputImage = CanvasFull;
-    Ord.NegativePrompt = ui->edtNegPrompt->toPlainText();
-    Ord.Prompt = ui->edtPrompt->toPlainText();
-
-
-    auto CurrentOptions = ((RenderConfigForm*)GetCurrentConfigWidget())->GetConfig();
-
-    Ord.Vae = (VaeMode)CurrentOptions.Vae;
-    Ord.Options.StepCount = CurrentOptions.NumSteps;
-    Ord.Options.Scheduler = InterOpHelper::ComboBoxIDToScheduler()[CurrentOptions.Sampler];
-
-    Ord.Options.DenoisingStrength = InterOpHelper::SliderToZeroOneRange(ui->sliDenoiseStrength->value());
-    Ord.Options.GuidanceScale = (float)ui->spbCFGScale->value();
-    QStringList WidthHeight = ui->ledtResolution->text().split("x");
-
-    Ord.Options.Height = WidthHeight[1].toInt(); Ord.Options.Width = WidthHeight[0].toInt();
-    Ord.Options.BatchSize = 1;
-    Ord.Options.Seed = ui->spbSeed->value();
-
-    Inferer->Queue.push(Ord);
-    Busy = true;
-    RenderAgain = false;
-
-
-
-
-
-
+    DoRender();
 
 }
 
@@ -401,7 +404,7 @@ void CanvasTab::on_btnRender_clicked()
 void CanvasTab::on_btnLivePreview_clicked(bool checked)
 {
     if (checked && !Busy)
-        on_btnRender_clicked();
+        DoRender(true);
 }
 
 
@@ -413,5 +416,16 @@ void CanvasTab::on_btnColorPicker_clicked(bool checked)
 
     ui->grpBrushOpts->setVisible(false);
     ui->grpFillBucketOptions->setVisible(false);
+}
+
+
+void CanvasTab::on_btnSwitchColors_clicked()
+{
+    QColor primcolor = selPrimColor->color();
+
+    // Reuse the color picked handler
+    onColorPicked(ColorCat::Primary, selSecondColor->color());
+    onColorPicked(ColorCat::Secondary, primcolor);
+
 }
 

@@ -38,8 +38,6 @@ ClickableImageLabel::~ClickableImageLabel()
     }
 
 
- //   ((QLabel*)this)->~QLabel();
-
 }
 
 void ClickableImageLabel::loadImage(const QString &imagePath)

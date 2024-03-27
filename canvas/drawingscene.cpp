@@ -12,10 +12,8 @@ DrawingScene::DrawingScene(QObject* parent)
     pen = QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap); // Adjust pen properties as needed
 
     CurrentTool = DrawingTool::PenBrush;
-    // I LOVE pointers!!!
 
 
-  //  Render();
 
 
 }
@@ -26,7 +24,8 @@ void DrawingScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
     if (event->button() == Qt::LeftButton || event->button() == Qt::RightButton) {
         lastPoint = event->scenePos();
 
-        if (!isDrawing)
+        // No need to do undos if we're using the color picker.
+        if (!isDrawing && CurrentTool != DrawingTool::ColorPicker)
             currentLayer->Snapshot();
 
         isDrawing = true;
@@ -65,8 +64,14 @@ void DrawingScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
         isDrawing = false;
 
-        currentLayer->Update();
-        emit Updated();
+        // Color picker shouldn't trigger any updates.
+        if (CurrentTool != DrawingTool::ColorPicker)
+        {
+            currentLayer->Update();
+            emit Updated();
+
+        }
+
 
     }
     QGraphicsScene::mouseReleaseEvent(event);
@@ -379,6 +384,8 @@ void DrawingScene::Initialize(QSize inSz)
     basePixmap = QPixmap(canvasSize).copy();
 
     pixmapItem = new DrawPixmapItem(basePixmap);
+
+    // I LOVE pointers!!!
     pixmapItem->currentTool = &CurrentTool;
     addItem(pixmapItem);
 

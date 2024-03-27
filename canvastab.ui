@@ -117,6 +117,23 @@
       </layout>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <widget class="QToolButton" name="btnColorPicker">
+         <property name="text">
+          <string>ColorPicker</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <widget class="Line" name="line">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -340,7 +357,7 @@
           <x>0</x>
           <y>0</y>
           <width>222</width>
-          <height>135</height>
+          <height>85</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">

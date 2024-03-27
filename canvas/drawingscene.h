@@ -18,11 +18,7 @@
 
 const size_t MAX_UNDO = 100;
 
-enum class DrawingTool{
-    PenBrush = 0,
-    Remover, // I'd name this Eraser but I want to avoid name collisions with Qt namespaces
-    FillBucket
-};
+
 
 class Layer {
 public:
@@ -95,6 +91,11 @@ public:
 };
 
 
+enum class ColorCat{
+  Primary = 0,
+  Secondary
+};
+
 using LayerList = std::list<std::unique_ptr<Layer>>;
 
 
@@ -161,12 +162,15 @@ private:
     bool isDrawing;
     QPointF lastPoint;        // Ensure this is declared
 
-    void drawLineTo(const QPointF& endPoint, const QColor& color = Qt::black);
+    void drawLineTo(const QPointF& endPoint, ColorCat category);
 
     void updateCursor(const QPointF &position);
 
+    QColor getAssignedColor(ColorCat cat);
+
 signals:
     void brushSizeChanged(int sz);
+    void colorPicked(ColorCat category, QColor col);
     void Updated();
 };
 

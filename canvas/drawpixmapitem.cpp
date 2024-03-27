@@ -23,20 +23,50 @@ void DrawPixmapItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void DrawPixmapItem::updateCursor()
 {
-    QPixmap cursorPixmap(cursorDiameter + 2, cursorDiameter + 2); // +2 for the outline
-    cursorPixmap.fill(Qt::transparent); // Transparent background
+    QPixmap cursorPixmap(14, 14); // Start with a base size for cursors
+    cursorPixmap.fill(Qt::transparent); // Ensure the background is transparent
 
-    QPainter painter(&cursorPixmap);
-    painter.setPen(QPen(Qt::black, 2)); // Black outline for the circle
-    painter.setBrush(Qt::transparent); // No fill for the circle
-    painter.drawEllipse(1, 1, cursorDiameter, cursorDiameter); // Draw the circle
+    if (*currentTool == DrawingTool::PenBrush) {
+        cursorPixmap = QPixmap(cursorDiameter + 2, cursorDiameter + 2);
+        cursorPixmap.fill(Qt::transparent);
+        QPainter painter(&cursorPixmap);
+        painter.setPen(QPen(Qt::black, 2));
+        painter.drawEllipse(1, 1, cursorDiameter, cursorDiameter);
+    }
+    else if (*currentTool == DrawingTool::Remover) {
+        cursorPixmap = QPixmap(cursorDiameter + 2, cursorDiameter + 2);
+        cursorPixmap.fill(Qt::transparent);
+        QPainter painter(&cursorPixmap);
+        painter.setPen(QPen(Qt::black, 2));
+        painter.drawEllipse(1, 1, cursorDiameter, cursorDiameter);
+        painter.drawLine(cursorDiameter / 4, cursorDiameter / 2, 3 * cursorDiameter / 4, cursorDiameter / 2);
+    }
+    else if (*currentTool == DrawingTool::FillBucket) {
+        QPainter painter(&cursorPixmap);
+        painter.setPen(QPen(Qt::black, 2));
+        painter.drawEllipse(1, 1, 12, 12); // Draw smaller circle for the fill bucket tool
+        int crossCenter = cursorPixmap.width() / 2;
+        int crossArmLength = 4;
+        painter.drawLine(crossCenter, crossCenter - crossArmLength, crossCenter, crossCenter + crossArmLength);
+        painter.drawLine(crossCenter - crossArmLength, crossCenter, crossCenter + crossArmLength, crossCenter);
+    }
+    else if (*currentTool == DrawingTool::ColorPicker) {
+        // The ColorPicker tool has the same base size but only the crosshair, no circle.
+        QPainter painter(&cursorPixmap);
+        painter.setPen(QPen(Qt::black, 2));
+        int crossCenter = cursorPixmap.width() / 2;
+        int crossArmLength = 4;
+        painter.drawLine(crossCenter, crossCenter - crossArmLength, crossCenter, crossCenter + crossArmLength);
+        painter.drawLine(crossCenter - crossArmLength, crossCenter, crossCenter + crossArmLength, crossCenter);
+    }
 
     QCursor cursor(cursorPixmap);
-
-    // Normally we use the pixmap item-specific setCursor, but that results in it resetting to normal cursor when we hold click.
     QApplication::setOverrideCursor(cursor);
-//    setCursor(cursor);
 }
+
+
+
+
 
 
 void DrawPixmapItem::mousePressEvent(QGraphicsSceneMouseEvent *event)

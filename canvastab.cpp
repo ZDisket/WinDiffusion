@@ -22,14 +22,6 @@ CanvasTab::CanvasTab(QWidget *parent)
 
     ui->grpFillBucketOptions->hide();
 
-  //  progressPoller = new QTimer(this); // Create the timer with MainWindow as the parent
-  //  progressPoller->setInterval(100); // Set the timer interval to 100 ms
-
-    // Connect the timeout signal of the timer to the OnProgressPoll slot
-//    connect(progressPoller, &QTimer::timeout, this, &CanvasTab::onProgressPoll);
-
-
-
 
 }
 
@@ -65,8 +57,10 @@ void CanvasTab::SetupCanvas()
 
     Scene->ToolColors = std::pair<QColor, QColor>(selPrimColor->color(), selSecondColor->color());
 
+
     connect(Scene, &DrawingScene::brushSizeChanged, this, &CanvasTab::onBrushSizeChanged);
     connect(Scene, &DrawingScene::Updated, this, &CanvasTab::onCanvasUpdated);
+    connect(Scene, &DrawingScene::colorPicked, this, &CanvasTab::onColorPicked);
 
     ui->viewResult->needsControlScroll = false;
     resultPixmapItem = nullptr;
@@ -105,6 +99,18 @@ void CanvasTab::onProgressPoll()
         return;
 
     ui->pgbRenderProgress->setValue((int32_t)(CurrentAsyncSrc->state().progress * 100.f));
+}
+
+void CanvasTab::onColorPicked(ColorCat cat, QColor col)
+{
+    // pick the selector
+    ColorSelector* selector = cat == ColorCat::Primary ? selPrimColor : selSecondColor;
+
+    selector->setColor(col);
+    // Artificially trigger its signal which will then propagate to our slot
+    selector->colorSelected(col);
+
+
 }
 
 void CanvasTab::onCanvasUpdated()
@@ -396,5 +402,16 @@ void CanvasTab::on_btnLivePreview_clicked(bool checked)
 {
     if (checked && !Busy)
         on_btnRender_clicked();
+}
+
+
+void CanvasTab::on_btnColorPicker_clicked(bool checked)
+{
+    if (!checked){return;}
+
+    Scene->CurrentTool = DrawingTool::ColorPicker;
+
+    ui->grpBrushOpts->setVisible(false);
+    ui->grpFillBucketOptions->setVisible(false);
 }
 

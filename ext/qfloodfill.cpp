@@ -31,6 +31,22 @@ bool isColorSimilar(const QColor& color1, const QColor& color2, float tolerance)
 }
 
 
+QColor getColorFromPixmap(const QPixmap& pixmap, int x, int y) {
+    // Convert QPixmap to QImage
+    QImage image = pixmap.toImage();
+
+    // Check if the point is within the image bounds
+    if(x >= 0 && y >= 0 && x < image.width() && y < image.height()) {
+        // Get the color at the specified point
+        QColor color = image.pixelColor(x, y);
+        // Return the color
+        return color;
+    } else {
+        // Return a default color (e.g., black) if the point is out of bounds
+        return QColor(0, 0, 0);
+    }
+}
+
 std::deque<QPoint> GetPoints(QImage& image, QPoint seed, float tolerance)
 {
     // A really simple algorithm for the time being. Feel free to improve!

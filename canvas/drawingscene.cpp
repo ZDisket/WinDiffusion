@@ -12,6 +12,8 @@ DrawingScene::DrawingScene(QObject* parent)
     pen = QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap); // Adjust pen properties as needed
 
     CurrentTool = DrawingTool::PenBrush;
+    // I LOVE pointers!!!
+
 
   //  Render();
 
@@ -45,7 +47,7 @@ void DrawingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
         // By basing the ternary on whether we're using the right button we prioritize it in case
         // both are held down at once
-        drawLineTo(event->scenePos(), isUsingRightBtn ? ToolColors.second : ToolColors.first);
+        drawLineTo(event->scenePos(), isUsingRightBtn ? ColorCat::Secondary : ColorCat::Primary);
     }
     QGraphicsScene::mouseMoveEvent(event);
 
@@ -59,7 +61,7 @@ void DrawingScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         )
     {
         drawLineTo(event->scenePos(),
-                   event->button() == Qt::RightButton ? ToolColors.second : ToolColors.first);
+                   event->button() == Qt::RightButton ? ColorCat::Secondary : ColorCat::Primary);
 
         isDrawing = false;
 
@@ -208,12 +210,16 @@ Layer *DrawingScene::getCurrentLayer()
 }
 
 
-void DrawingScene::drawLineTo(const QPointF& endPoint, const QColor& color)
+void DrawingScene::drawLineTo(const QPointF& endPoint, ColorCat category)
 {
     QPainter painter(*currentLayer);
     painter.setRenderHint(QPainter::Antialiasing, true); // Enable antialiasing
+
+    QColor color = getAssignedColor(category);
+
     pen.setColor(color);
 
+    // Maybe I should make this a switch-case.
     if (CurrentTool == DrawingTool::Remover)
     {
         // Set the composition mode to erase the drawing
@@ -229,6 +235,8 @@ void DrawingScene::drawLineTo(const QPointF& endPoint, const QColor& color)
         QPoint pntPixmap((int)round(pixmapPos.x()),
                          (int)round(pixmapPos.y()));
 
+
+
         /*
          * Use the canvas with background as the workspace, while passing the drawingpixmap's painter
          * so it only operates on the current drawing area.
@@ -237,6 +245,22 @@ void DrawingScene::drawLineTo(const QPointF& endPoint, const QColor& color)
         FloodFill(Rendered, pntPixmap, pen.color(), Tolerance, painter);
 
         goto finish; // the EVIL goto keyword
+    }
+    else if (CurrentTool == DrawingTool::ColorPicker)
+    {
+        QPointF pixmapPos = pixmapItem->mapFromScene(endPoint);
+
+        QPoint pntPixmap((int)round(pixmapPos.x()),
+                         (int)round(pixmapPos.y()));
+
+        emit colorPicked(category,
+                         getColorFromPixmap(*currentLayer, pntPixmap.x(), pntPixmap.y())
+                         );
+
+        goto finish;
+
+
+
     }
     else
     {
@@ -251,6 +275,11 @@ void DrawingScene::drawLineTo(const QPointF& endPoint, const QColor& color)
 
     finish:
     Render();
+}
+
+QColor DrawingScene::getAssignedColor(ColorCat cat)
+{
+    return cat == ColorCat::Primary ? ToolColors.first : ToolColors.second;
 }
 
 QPixmap& DrawingScene::Render(bool final)
@@ -345,11 +374,12 @@ bool DrawingScene::event(QEvent *event)
 
 void DrawingScene::Initialize(QSize inSz)
 {
-    canvasSize = QSize(768,768);
+    canvasSize = inSz;
 
     basePixmap = QPixmap(canvasSize).copy();
 
     pixmapItem = new DrawPixmapItem(basePixmap);
+    pixmapItem->currentTool = &CurrentTool;
     addItem(pixmapItem);
 
 }

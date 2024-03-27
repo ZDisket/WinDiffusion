@@ -63,6 +63,7 @@ public slots:
 protected slots:
 
 
+    void onColorPicked(ColorCat cat, QColor col);
     void onCanvasUpdated();
     void onLayerSetActive(bool act, LayerWidget* sendingWid);
     void onLayerSetVisible(bool act, LayerWidget* sendingWid);
@@ -90,6 +91,8 @@ private slots:
     void on_sliBrushSize_valueChanged(int value);
 
     void on_btnLivePreview_clicked(bool checked);
+
+    void on_btnColorPicker_clicked(bool checked);
 
 signals:
     void DemandModelLoad();

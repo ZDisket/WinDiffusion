@@ -4,6 +4,13 @@
 #include <QPen>
 #include <QGraphicsSceneHoverEvent>
 
+enum class DrawingTool{
+    PenBrush = 0,
+    Remover, // I'd name this Eraser but I want to avoid name collisions with Qt namespaces
+    FillBucket,
+    ColorPicker
+};
+
 class DrawPixmapItem : public QGraphicsPixmapItem
 {
 public:
@@ -18,6 +25,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 public:
+    DrawingTool* currentTool = nullptr;
     int cursorDiameter;
     void updateCursor();
 };

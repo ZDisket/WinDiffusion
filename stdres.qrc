@@ -13,5 +13,9 @@
         <file>res/canvas/eye32.png</file>
         <file>res/canvas/camera32off.png</file>
         <file>res/canvas/eye32off.png</file>
+        <file>res/canvas/brush.png</file>
+        <file>res/canvas/eraser.png</file>
+        <file>res/canvas/eyedropper.png</file>
+        <file>res/canvas/paint-bucket.png</file>
     </qresource>
 </RCC>

@@ -28,7 +28,7 @@ void CanvasInferer::ProcessOrder(CanvasOrder &Ord)
 
     // Prepare settings
 
-    // Using the Tiny VAE encoder results in too much quality deteoriation and result deviation (this one especially is really bad!)
+    // Using the Tiny VAE encoder results in too much quality deteoriation and [result deviation <- (this one especially is really bad!)
     Model->SetVaeMode(VaeMode::Normal);
 
 

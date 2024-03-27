@@ -43,6 +43,7 @@ private:
     bool RenderAgain = false;
 
 
+    void DoRender(bool forcePreview = false);
 
     // Please cast the result to RenderConfigForm* because I don't feel like including it in the header.
     // Thank you.
@@ -93,6 +94,8 @@ private slots:
     void on_btnLivePreview_clicked(bool checked);
 
     void on_btnColorPicker_clicked(bool checked);
+
+    void on_btnSwitchColors_clicked();
 
 signals:
     void DemandModelLoad();

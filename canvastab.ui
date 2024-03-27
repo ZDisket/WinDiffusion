@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1540</width>
-    <height>877</height>
+    <width>1647</width>
+    <height>997</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,7 +49,7 @@
   </widget>
   <widget class="QDockWidget" name="dckTools">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -66,8 +66,21 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QToolButton" name="btnBrush">
+         <property name="toolTip">
+          <string>Brush (Pen)</string>
+         </property>
          <property name="text">
-          <string>Brush</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="stdres.qrc">
+           <normaloff>:/res/canvas/brush.png</normaloff>:/res/canvas/brush.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -86,8 +99,21 @@
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
         <widget class="QToolButton" name="btnEraser">
-         <property name="text">
+         <property name="toolTip">
           <string>Eraser</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="stdres.qrc">
+           <normaloff>:/res/canvas/eraser.png</normaloff>:/res/canvas/eraser.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -103,8 +129,33 @@
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
         <widget class="QToolButton" name="btnFillBucket">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Fill bucket</string>
+         </property>
          <property name="text">
-          <string>FillBucket</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="stdres.qrc">
+           <normaloff>:/res/canvas/paint-bucket.png</normaloff>:/res/canvas/paint-bucket.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -120,8 +171,21 @@
       <layout class="QHBoxLayout" name="horizontalLayout_9">
        <item>
         <widget class="QToolButton" name="btnColorPicker">
+         <property name="toolTip">
+          <string> Color picker</string>
+         </property>
          <property name="text">
-          <string>ColorPicker</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="stdres.qrc">
+           <normaloff>:/res/canvas/eyedropper.png</normaloff>:/res/canvas/eyedropper.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -357,7 +421,7 @@
           <x>0</x>
           <y>0</y>
           <width>222</width>
-          <height>85</height>
+          <height>112</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -391,7 +455,7 @@
           <x>0</x>
           <y>0</y>
           <width>258</width>
-          <height>680</height>
+          <height>800</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -803,6 +867,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="stdres.qrc"/>
+ </resources>
  <connections/>
 </ui>

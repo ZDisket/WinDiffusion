@@ -429,3 +429,9 @@ void CanvasTab::on_btnSwitchColors_clicked()
 
 }
 
+
+void CanvasTab::on_sliDenoiseStrength_valueChanged(int value)
+{
+    ui->lblDenStrengthShow->setText(QString::number(value) + "%");
+}
+

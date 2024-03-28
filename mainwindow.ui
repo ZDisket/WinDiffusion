@@ -1162,8 +1162,6 @@ image-&gt;Send to img2img/inpaint</string>
     <addaction name="actionScroll_Right"/>
     <addaction name="actionClear_current_outputs_2"/>
     <addaction name="separator"/>
-    <addaction name="actUndo"/>
-    <addaction name="actRender"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1171,9 +1169,19 @@ image-&gt;Send to img2img/inpaint</string>
     </property>
     <addaction name="actionWhat_s_this"/>
    </widget>
+   <widget class="QMenu" name="menuCanvas">
+    <property name="title">
+     <string>Canvas</string>
+    </property>
+    <addaction name="actNewCanvas"/>
+    <addaction name="separator"/>
+    <addaction name="actUndo"/>
+    <addaction name="actRender"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuCanvas"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionScroll_Left">
@@ -1250,13 +1258,18 @@ image-&gt;Send to img2img/inpaint</string>
   </action>
   <action name="actRender">
    <property name="text">
-    <string>Render (Canvas)</string>
+    <string>Render</string>
    </property>
    <property name="shortcut">
     <string>F12</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actNewCanvas">
+   <property name="text">
+    <string>New Canvas</string>
    </property>
   </action>
  </widget>

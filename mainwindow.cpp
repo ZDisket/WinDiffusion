@@ -15,6 +15,8 @@
 #include <QFileDialog>
 #include "canvastab.h"
 
+#define GETCANVAS ((CanvasTab*)canvasTab)
+
 // Function to create "outputs" folder if it doesn't exist
 QString createOutputsFolder() {
     QString applicationPath = QCoreApplication::applicationDirPath();
@@ -1099,12 +1101,18 @@ void MainWindow::on_btnClearUpscaleAdds_clicked()
 
 void MainWindow::on_actUndo_triggered()
 {
-    ((CanvasTab*)canvasTab)->onUndo(true);
+    GETCANVAS->onUndo(true);
 }
 
 
 void MainWindow::on_actRender_triggered()
 {
-    ((CanvasTab*)canvasTab)->on_btnRender_clicked();
+    GETCANVAS->on_btnRender_clicked();
+}
+
+
+void MainWindow::on_actNewCanvas_triggered()
+{
+
 }
 

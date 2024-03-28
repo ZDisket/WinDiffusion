@@ -120,6 +120,8 @@ private slots:
 
     void on_actRender_triggered();
 
+    void on_actNewCanvas_triggered();
+
 private:
 
     void SetControls(bool Enabled);

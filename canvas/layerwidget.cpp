@@ -34,9 +34,8 @@ bool LayerWidget::eventFilter(QObject *watched, QEvent *event) {
             ui->frame->setStyleSheet(isActive ? "QFrame { border: 2px solid blue; }" : "QFrame { border: 1px solid black; }");
             break;
         case QEvent::MouseButtonPress:
-            SetIsActive(!isActive);
-            // Change the border color to deep blue when active
-            ui->frame->setStyleSheet("QFrame { border: 2px solid blue; }");
+            if (!isActive)
+                 SetIsActive(true);
             break;
         case QEvent::MouseButtonDblClick:
             onDoubleClick();

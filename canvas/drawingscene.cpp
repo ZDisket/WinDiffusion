@@ -383,11 +383,24 @@ void DrawingScene::Initialize(QSize inSz)
 
     basePixmap = QPixmap(canvasSize).copy();
 
-    pixmapItem = new DrawPixmapItem(basePixmap);
+
+
+    if (!pixmapItem){
+
+        pixmapItem = new DrawPixmapItem(basePixmap);
+        addItem(pixmapItem);
+
+    }
 
     // I LOVE pointers!!!
     pixmapItem->currentTool = &CurrentTool;
-    addItem(pixmapItem);
+
+    if (layers.size())
+        layers.clear();
+
+
+
+
 
 }
 

@@ -19,6 +19,7 @@ public:
     StableDiffusionModel* CuMdl;
 
 
+    void NewCanvas(QSize sz, const QColor& fillcol);
 
     explicit CanvasTab(QWidget *parent = nullptr);
     ~CanvasTab();
@@ -96,6 +97,8 @@ private slots:
     void on_btnColorPicker_clicked(bool checked);
 
     void on_btnSwitchColors_clicked();
+
+    void on_sliDenoiseStrength_valueChanged(int value);
 
 signals:
     void DemandModelLoad();

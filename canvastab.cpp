@@ -7,6 +7,15 @@
 using namespace color_widgets;
 using namespace QtAxInterop;
 
+void CanvasTab::NewCanvas(QSize sz, const QColor &fillcol)
+{
+
+    Scene->Initialize(sz);
+
+    AddLayer("Background", fillcol);
+    AddLayer("Layer 1");
+}
+
 CanvasTab::CanvasTab(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::CanvasTab)
@@ -49,11 +58,8 @@ void CanvasTab::SetupCanvas()
     Scene = new DrawingScene(this);
     ui->viewDraw->setScene(Scene);
 
-    QSize cvs(768,768);
-    Scene->Initialize(cvs);
-
-    AddLayer("Background", Qt::white);
-    AddLayer("Layer 1");
+    NewCanvas(QSize(768,768),
+              Qt::white);
 
     Scene->ToolColors = std::pair<QColor, QColor>(selPrimColor->color(), selSecondColor->color());
 
@@ -288,7 +294,7 @@ void CanvasTab::on_btnFillBucket_clicked(bool checked)
 
 void CanvasTab::on_btnNewLayer_clicked()
 {
-    AddLayer("Layer");
+    AddLayer("Layer " + QString::number(Scene->getLayers().size()));
 }
 
 

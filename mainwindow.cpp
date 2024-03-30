@@ -15,6 +15,8 @@
 #include <QFileDialog>
 #include "canvastab.h"
 
+#include "newcanvasdialog.h"
+
 #define GETCANVAS ((CanvasTab*)canvasTab)
 
 // Function to create "outputs" folder if it doesn't exist
@@ -80,25 +82,23 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     UseFirst = true;
     PreviewsSpacer = nullptr;
+    CurrentPgb = nullptr;
+    CurrentInferThrd = nullptr;
 
     OutpsDir = createOutputsFolder();
-    CurrentPgb = nullptr;
-
-    CurrentInferThrd = nullptr;
 
 
     qRegisterMetaType< std::vector<Axodox::Graphics::TextureData> >("std::vector<Axodox::Graphics::TextureData>");
-    //qRegisterMetaType< std::vector<Axodox::Graphics::TextureData>& >("std::vector<Axodox::Graphics::TextureData>&");
 
-    progressPoller = new QTimer(this); // Create the timer with MainWindow as the parent
-    progressPoller->setInterval(100); // Set the timer interval to 100 ms
-
-    // Connect the timeout signal of the timer to the OnProgressPoll slot
+    progressPoller = new QTimer(this);
+    progressPoller->setInterval(100);
     connect(progressPoller, &QTimer::timeout, this, &MainWindow::OnProgressPoll);
 
     progressPoller->start(); // Start the timer
+
 
     IsProcessing = false;
     CurrentItemNumber = 0;
@@ -501,15 +501,15 @@ void MainWindow::on_btnLoadModel_clicked()
 
 int32_t MainWindow::GetNeighbor(size_t InIdx)
 {
-    size_t MaxIndex = TopBarImages.size() - 1;
+    int32_t MaxIndex = ((int32_t)TopBarImages.size()) - 1;
 
     // Try going forward
-    size_t AttemptIndex = InIdx + 1;
+    int32_t AttemptIndex = InIdx + 1;
 
     if (AttemptIndex > MaxIndex)
         return -1;
 
-    return (int32_t) AttemptIndex;
+    return AttemptIndex;
 
 
 
@@ -1113,6 +1113,14 @@ void MainWindow::on_actRender_triggered()
 
 void MainWindow::on_actNewCanvas_triggered()
 {
+    NewCanvasDialog dialog(this);
+
+    int result = dialog.exec();
+
+    if (result != QDialog::Accepted)
+        return;
+
+    GETCANVAS->NewCanvas(dialog.settings.size, dialog.settings.color);
 
 }
 

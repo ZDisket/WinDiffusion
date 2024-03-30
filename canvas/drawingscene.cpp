@@ -381,20 +381,39 @@ void DrawingScene::Initialize(QSize inSz)
 {
     canvasSize = inSz;
 
+    qDebug() << "Creating new canvas size " << inSz;
+
     basePixmap = QPixmap(canvasSize).copy();
 
 
 
-    if (!pixmapItem){
 
-        pixmapItem = new DrawPixmapItem(basePixmap);
-        addItem(pixmapItem);
-
+    if (pixmapItem)
+    {
+        removeItem(pixmapItem);
+        delete pixmapItem;
     }
+
+
+
+    pixmapItem = new DrawPixmapItem(basePixmap);
+    addItem(pixmapItem);
+
 
     // I LOVE pointers!!!
     pixmapItem->currentTool = &CurrentTool;
 
+    /*
+     * Layers have to be manually deleted via Die() then regular delete every time
+     * This is because they """own""" their widgets, and having them delete those widgets at destructor-time causes a crash on exit,
+     * as they try to delete already freed memory by their widget parents.
+    */
+
+    // Manual delete: tell the layers to delete their widgets
+    for (auto& lay : layers)
+        lay->Die();
+
+    // Now we can delete them normally.
     if (layers.size())
         layers.clear();
 

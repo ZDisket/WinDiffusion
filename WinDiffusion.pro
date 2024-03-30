@@ -29,6 +29,7 @@ SOURCES += \
     inferer.cpp \
     main.cpp \
     mainwindow.cpp \
+    newcanvasdialog.cpp \
     paintablecanvas.cpp \
     pathwidgetitem.cpp \
     renderconfigform.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
     horizontalscrollarea.h \
     inferer.h \
     mainwindow.h \
+    newcanvasdialog.h \
     paintablecanvas.h \
     pathwidgetitem.h \
     renderconfigform.h \
@@ -66,6 +68,7 @@ FORMS += \
     canvas/layerwidget.ui \
     canvastab.ui \
     mainwindow.ui \
+    newcanvasdialog.ui \
     renderconfigform.ui
 
 # Default rules for deployment.

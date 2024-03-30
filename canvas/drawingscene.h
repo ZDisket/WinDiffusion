@@ -72,6 +72,7 @@ public:
         }
 
     }
+
 private:
     Layer(const Layer& ly) {throw std::exception("Copying layers is verboten");}
 
@@ -80,6 +81,7 @@ private:
         laywid->layer = this;
 
     }
+
 
 public:
 

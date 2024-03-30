@@ -156,6 +156,7 @@ void CanvasTab::RefreshLayersList()
 
     for (auto& lay : Scene->getLayers())
     {
+
         ui->scraLayout->removeWidget(lay->laywid);
 
 

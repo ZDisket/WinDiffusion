@@ -3,7 +3,7 @@
 #include "Include/Axodox.Collections.h"
 #include "Include/Axodox.Infrastructure.h"
 #include "Include/Axodox.MachineLearning.h"
-
+#include <random>
 #include <QImage>
 
 
@@ -25,6 +25,33 @@ class InterOpHelper
     InterOpHelper(){};
 
 public:
+
+    template<typename T>
+    static T getRandomNum()
+    {
+        std::random_device rd;
+
+        std::mt19937 gen(rd());
+
+        std::uniform_int_distribution<T> _rand_distrub{};
+
+        return _rand_distrub(gen);
+    }
+
+    static uint32_t getRandomUint32() {
+        // Create a random device
+        std::random_device rd;
+
+        // Use the random device to seed a Mersenne Twister engine
+        std::mt19937 gen(rd());
+
+        // Define a distribution range. In this case, it's the full range of uint32_t
+        std::uniform_int_distribution<uint32_t> _rand_distrub{};
+
+        // Generate and return a random uint32_t
+        return _rand_distrub(gen);
+    }
+
 
     static std::vector<SDSchedulerT> ComboBoxIDToScheduler(){
         return std::vector<SDSchedulerT>{SDSchedulerT::DpmPlusPlus2M , SDSchedulerT::EulerAncestral};
@@ -63,13 +90,12 @@ public:
     static void TextureDataToQImage(Axodox::Graphics::TextureData& TexDat, QImage& OutImg)
     {
 
-        int bytesPerPixel = 4; // 4 for RGBA, 3 for RGB
         QImage::Format format = QImage::Format_RGBA8888;
 
         auto ImageBuffer = TexDat.ToFormat(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB).Buffer; // ToBuffer() emits obscure D3D12 error because it's been shitting itself
 
         // DXGI_FORMAT_R8G8B8A8_UNORM_SRGB == QImage::Format_RGBA8888
-        QImage image(ImageBuffer.data(), TexDat.Width, TexDat.Height, TexDat.Width * bytesPerPixel, format);
+        QImage image(ImageBuffer.data(), TexDat.Width, TexDat.Height, TexDat.Width * BYTES_PER_PIXEL_RGBA, format);
 
         OutImg = image.copy();
 

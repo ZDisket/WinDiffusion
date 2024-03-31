@@ -461,8 +461,14 @@
         <layout class="QVBoxLayout" name="verticalLayout_12">
          <item>
           <widget class="QCheckBox" name="chkViewRenderResults">
+           <property name="toolTip">
+            <string>Whether the result is visible.</string>
+           </property>
            <property name="text">
             <string>Visible</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -529,6 +535,9 @@
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimum">
+              <number>-999999999</number>
              </property>
              <property name="maximum">
               <number>999999999</number>
@@ -731,6 +740,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="btnRender">
+         <property name="toolTip">
+          <string>Trigger a render. It will use the configuration you selected in the Render Options tab</string>
+         </property>
          <property name="text">
           <string>Render</string>
          </property>
@@ -743,6 +755,9 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Activate live preview rendering, auto-updating when changes are done. It will always use the Preview configuration.</string>
          </property>
          <property name="text">
           <string>Live preview</string>

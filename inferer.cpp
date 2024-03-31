@@ -1,6 +1,5 @@
 #include "inferer.h"
 #include <iostream>
-#include <random>
 #include <QDebug>
 #include "QtAxodoxInteropCommon.hpp"
 #include "pathwidgetitem.h"
@@ -21,19 +20,6 @@ Inferer::Inferer() {
     Model = nullptr;
 }
 
-uint32_t getRandomUint32() {
-    // Create a random device
-    std::random_device rd;
-
-    // Use the random device to seed a Mersenne Twister engine
-    std::mt19937 gen(rd());
-
-    // Define a distribution range. In this case, it's the full range of uint32_t
-    std::uniform_int_distribution<uint32_t> _rand_distrub{};
-
-    // Generate and return a random uint32_t
-    return _rand_distrub(gen);
-}
 
 
 
@@ -123,7 +109,7 @@ void Inferer::DoInference()
     {
 
         if (RandomSeed){
-            Opts.Seed = getRandomUint32();
+            Opts.Seed = QtAxInterop::InterOpHelper::getRandomUint32();
         }
 
 

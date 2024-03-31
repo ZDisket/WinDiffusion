@@ -100,6 +100,12 @@ private slots:
 
     void on_sliDenoiseStrength_valueChanged(int value);
 
+    void on_btnRandomSeed_clicked();
+
+    void on_spbSeed_valueChanged(int arg1);
+
+    void on_chkViewRenderResults_clicked(bool checked);
+
 signals:
     void DemandModelLoad();
 };

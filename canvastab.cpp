@@ -32,6 +32,10 @@ CanvasTab::CanvasTab(QWidget *parent)
     ui->grpFillBucketOptions->hide();
 
 
+    ui->spbSeed->setMaximum(INT_MAX);
+    ui->spbSeed->setMinimum(INT_MIN);
+
+
 }
 
 void CanvasTab::SetupColorWidgets()
@@ -244,6 +248,13 @@ void CanvasTab::DoRender(bool forcePreview)
     Busy = true;
     RenderAgain = false;
 
+    if (!ui->chkViewRenderResults->isChecked())
+    {
+        ui->chkViewRenderResults->setChecked(true);
+        ui->viewResult->show();
+
+    }
+
 }
 
 QWidget *CanvasTab::GetCurrentConfigWidget()
@@ -440,5 +451,26 @@ void CanvasTab::on_btnSwitchColors_clicked()
 void CanvasTab::on_sliDenoiseStrength_valueChanged(int value)
 {
     ui->lblDenStrengthShow->setText(QString::number(value) + "%");
+    onCanvasUpdated();
+}
+
+
+void CanvasTab::on_btnRandomSeed_clicked()
+{
+    ui->spbSeed->setValue(
+        InterOpHelper::getRandomNum<int>()
+        );
+}
+
+
+void CanvasTab::on_spbSeed_valueChanged(int arg1)
+{
+    onCanvasUpdated();
+}
+
+
+void CanvasTab::on_chkViewRenderResults_clicked(bool checked)
+{
+    ui->viewResult->setVisible(checked);
 }
 

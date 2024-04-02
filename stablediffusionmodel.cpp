@@ -173,6 +173,7 @@ void StableDiffusionModel::Destroy()
 
 }
 
+// AuxiliaryPath ends with "/".
 bool StableDiffusionModel::Load(const std::string &ModelPath, const std::string& AuxiliaryPath)
 {
     if (Loaded)
@@ -183,17 +184,14 @@ bool StableDiffusionModel::Load(const std::string &ModelPath, const std::string&
 
     Env = std::make_unique<OnnxEnvironment>(ModelPath);
 
-    TxtEmbedder = std::make_unique<TextEmbedder>(*Env);
+    bool isSDXL = std::filesystem::is_directory(Env->RootPath() / "text_encoder_2");
+    std::string TinyDecoderFn = isSDXL ? "taesdxl_decoder.onnx" : "taesd_decoder.onnx";
+    std::string TinyEncoderFn = isSDXL ? "taesdxl_encoder.onnx" : "taesd_encoder.onnx";
+
+    TxtEmbedder = std::make_unique<TextEmbedder>(*Env, AuxiliaryPath + "text_tokenizer");
     UNet = std::make_unique<StableDiffusionInferer>(*Env);
     VAE_D = std::make_unique<VaeDecoder>(*Env);
-
-    bool isSDXL = std::filesystem::is_directory(Env->RootPath() / "text_encoder_2");
-
-    std::string TinyDecoderFn = isSDXL ? "taesdxl_decoder.onnx" : "taesd_decoder.onnx";
-
     VAE_D_Tiny = std::make_unique<VaeDecoder>(*Env, AuxiliaryPath + TinyDecoderFn);
-
-    std::string TinyEncoderFn = isSDXL ? "taesdxl_encoder.onnx" : "taesd_encoder.onnx";
 
     // Unlike the tiny decoder, the tiny encoder's name is merely saved to be loaded on-demand.
     FullTinyEncoderPath = AuxiliaryPath + TinyEncoderFn;

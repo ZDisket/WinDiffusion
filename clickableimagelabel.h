@@ -8,6 +8,10 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
+/*
+ ClickableImageLabel: A widget for display of result images
+ It should NOT own its images, hence the heavy use of pointers
+*/
 class ClickableImageLabel : public QLabel {
     Q_OBJECT
 
@@ -20,7 +24,7 @@ public:
     ~ClickableImageLabel() override;
 
     void loadImage(const QString& imagePath);
-    void SetImage(QImage *Img);
+    void SetImage(QImage *Img, QString *Path = nullptr);
     void SetImagePreview(QImage& Img);
 private:
 

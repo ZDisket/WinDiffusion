@@ -21,6 +21,7 @@ ClickableImageLabel::ClickableImageLabel(QWidget *parent) : QLabel(parent) {
     actSendToUpscale = new QAction("Send to upscale",this);
     actSendToFavorites = new QAction("Save to favorites",this);
 
+
    connect(actSendToImg2Img, &QAction::triggered, this, &ClickableImageLabel::OnClickSendToImg2Img);
    connect(actSendToInpaint, &QAction::triggered, this, &ClickableImageLabel::OnClickSendToInpaint);
    connect(actSendToUpscale, &QAction::triggered, this, &ClickableImageLabel::OnClickSendToUpscale);
@@ -50,12 +51,14 @@ void ClickableImageLabel::loadImage(const QString &imagePath)
 
 }
 
-void ClickableImageLabel::SetImage(QImage* Img)
+
+void ClickableImageLabel::SetImage(QImage* Img, QString* Path)
 {
     OriginalImage = Img;
     setPixmap(
         QPixmap::fromImage(OriginalImage->scaled(pixmap().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation))
         );
+    pToOriginalFilePath = Path;
 }
 
 void ClickableImageLabel::SetImagePreview(QImage &Img)
@@ -77,7 +80,7 @@ void ClickableImageLabel::mousePressEvent(QMouseEvent* event) {
 
     if (OriginalImage->size().width() > 1024 && OriginalImage->size().height() > 1024)
     {
-        // Open the image (path is defined by class member QString* pToOriginalFilePath) in windows image viewer
+        // Open the image in windows image viewer
         QDesktopServices::openUrl(QUrl::fromLocalFile(*pToOriginalFilePath));
 
 

@@ -374,11 +374,6 @@ void MainWindow::OnTopBarClick(size_t LblIndex)
     if (!TopBarImages.size())
         return;
 
-    const int PREVIEW_RES = 430;
-
-    QPixmap ViewportImg = QPixmap::fromImage(TopBarImages[LblIndex]->OriginalImg).scaled(PREVIEW_RES,PREVIEW_RES,Qt::KeepAspectRatio,Qt::SmoothTransformation);
-
-
     int32_t Neighbor = GetNeighbor(LblIndex);
 
     if (Neighbor == -1)
@@ -388,9 +383,7 @@ void MainWindow::OnTopBarClick(size_t LblIndex)
         if (!UseFirst)
             Viewport = ui->lblImg;
 
-        Viewport->setPixmap(ViewportImg);
-        Viewport->OriginalImage = &TopBarImages[LblIndex]->OriginalImg;
-        Viewport->pToOriginalFilePath = &TopBarImages[LblIndex]->FilePath;
+        Viewport->SetImage(&TopBarImages[LblIndex]->OriginalImg, &TopBarImages[LblIndex]->FilePath);
 
 
 
@@ -399,15 +392,11 @@ void MainWindow::OnTopBarClick(size_t LblIndex)
 
     }else
     {
-        QPixmap SecondViewportImg = QPixmap::fromImage(TopBarImages[Neighbor]->OriginalImg).scaled(PREVIEW_RES,PREVIEW_RES,Qt::KeepAspectRatio,Qt::SmoothTransformation);
 
-        ui->lblLeftImg->setPixmap(ViewportImg);
-        ui->lblLeftImg->OriginalImage = &TopBarImages[LblIndex]->OriginalImg;
-        ui->lblLeftImg->pToOriginalFilePath = &TopBarImages[LblIndex]->FilePath;
+        ui->lblLeftImg->SetImage(&TopBarImages[LblIndex]->OriginalImg, &TopBarImages[LblIndex]->FilePath);
 
-        ui->lblImg->setPixmap(SecondViewportImg);
-        ui->lblImg->OriginalImage = &TopBarImages[Neighbor]->OriginalImg;
-        ui->lblImg->pToOriginalFilePath = &TopBarImages[Neighbor]->FilePath;
+        ui->lblImg->SetImage(&TopBarImages[Neighbor]->OriginalImg, &TopBarImages[Neighbor]->FilePath);
+
 
         UseFirst = true;
 

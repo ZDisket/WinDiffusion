@@ -7,7 +7,7 @@
 #include <QImage>
 
 
-
+#define IF_EXCEPT(cond, ex) if (cond){throw ex;}
 
 namespace QtAxInterop{
 

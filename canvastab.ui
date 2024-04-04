@@ -445,6 +445,19 @@
    <widget class="QWidget" name="dockWidgetContents_5">
     <layout class="QVBoxLayout" name="verticalLayout_10">
      <item>
+      <widget class="QCheckBox" name="chkViewRenderResults">
+       <property name="toolTip">
+        <string>Whether the result is visible.</string>
+       </property>
+       <property name="text">
+        <string>Visible</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QScrollArea" name="scraRenderOptions">
        <property name="widgetResizable">
         <bool>true</bool>
@@ -455,23 +468,10 @@
           <x>0</x>
           <y>0</y>
           <width>258</width>
-          <height>800</height>
+          <height>769</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_12">
-         <item>
-          <widget class="QCheckBox" name="chkViewRenderResults">
-           <property name="toolTip">
-            <string>Whether the result is visible.</string>
-           </property>
-           <property name="text">
-            <string>Visible</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="Line" name="line_3">
            <property name="orientation">
@@ -557,6 +557,46 @@
              </property>
              <property name="text">
               <string>R</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_6">
+           <property name="lineWidth">
+            <number>3</number>
+           </property>
+           <property name="midLineWidth">
+            <number>2</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_13">
+           <item>
+            <widget class="QLabel" name="label_14">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Preset:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="cbRenderPresets"/>
+           </item>
+           <item>
+            <widget class="QToolButton" name="btnSavePreset">
+             <property name="text">
+              <string>S</string>
              </property>
             </widget>
            </item>

@@ -2,6 +2,7 @@
 #define RENDERCONFIGFORM_H
 
 #include <QWidget>
+#include "ext/ZFile.h"
 
 namespace Ui {
 class RenderConfigForm;
@@ -25,6 +26,11 @@ struct RenderConfig{
 };
 
 
+ZFILE_IOVR(RenderConf::RenderConfig, RendCof);
+
+
+ZFILE_OOVR(RenderConf::RenderConfig, RendCof);
+
 
 class RenderConfigForm : public QWidget
 {
@@ -36,6 +42,7 @@ public:
 
 
     RenderConf::RenderConfig GetConfig();
+    void SetConfig(const RenderConf::RenderConfig& InConf);
 
 private:
     Ui::RenderConfigForm *ui;

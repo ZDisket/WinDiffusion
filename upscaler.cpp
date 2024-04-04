@@ -119,17 +119,9 @@ void Upscaler::Load(const std::string &ModelPath)
 
 QImage Upscaler::UpscaleImg(const QImage &InImg, uint32_t TileSize, uint32_t Overlap, Axodox::Threading::async_operation_source *async_src)
 {
-    if (Overlap > TileSize + 1)
-        throw std::invalid_argument("Overlap cannot be bigger than or equal to tile size!");
+    IF_EXCEPT(Overlap > TileSize + 1, std::invalid_argument("Overlap cannot be bigger than or equal to tile size!"))
 
-    if (InImg.isNull())
-        throw std::invalid_argument("Cannot upscale a null or invalid image!");
-
-
-
-
-
-
+    IF_EXCEPT(InImg.isNull(), std::invalid_argument("Cannot upscale a null or invalid image!"))
 
 
     // How dimensions look like with the overlap added
@@ -139,7 +131,11 @@ QImage Upscaler::UpscaleImg(const QImage &InImg, uint32_t TileSize, uint32_t Ove
     The overlap obviously makes each tile bigger, so we ensure the real tile size stays as TileSize
     by subtracting what the overlap would add.
     */
-    uint32_t RealTileDim = TileSize - OverlapDimensionsAdd;
+    int32_t RealTileDim = TileSize - OverlapDimensionsAdd;
+
+    IF_EXCEPT(RealTileDim < 0, std::runtime_error("Tile size after overlap subtraction is negative!"))
+
+
     QSize szTileSize(RealTileDim, RealTileDim);
 
     /*
@@ -152,6 +148,8 @@ QImage Upscaler::UpscaleImg(const QImage &InImg, uint32_t TileSize, uint32_t Ove
 
     QList<QImage> UpsChunks;
     QImage OutChunk;
+
+    UpsChunks.reserve(ImgList.size());
 
     for (auto& Img : ImgList)
     {

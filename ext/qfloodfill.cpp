@@ -103,7 +103,6 @@ void FloodFill(QPixmap& pixmap, QPoint seed, QColor newColor, float tolerance, Q
 
     const auto points = GetPoints(image, seed, tolerance); // Pass tolerance here
 
-    //QPainter painter(&pixmap);
     painter.setPen(newColor);
     painter.setBrush(newColor);
     painter.setCompositionMode(QPainter::CompositionMode_Source);

@@ -3,6 +3,7 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include "QtAxodoxInteropCommon.hpp"
+#include "canvasrenderpreset.h"
 
 using namespace color_widgets;
 using namespace QtAxInterop;
@@ -35,6 +36,7 @@ CanvasTab::CanvasTab(QWidget *parent)
     ui->spbSeed->setMaximum(INT_MAX);
     ui->spbSeed->setMinimum(INT_MIN);
 
+    RefreshPresets();
 
 }
 
@@ -96,6 +98,37 @@ void CanvasTab::SetResult(QImage &img)
 
     ui->viewResult->scene()->setSceneRect(pixmap.rect());
 }
+
+
+
+void CanvasTab::RefreshPresets()
+{
+
+    QString presetsDirPath = GetPresetsPath();
+
+    // Create a QDir object pointing to the presets directory
+    QDir presetsDir(presetsDirPath);
+
+    if (!presetsDir.exists())
+        return;
+
+    ui->cbRenderPresets->blockSignals(true);
+    ui->cbRenderPresets->clear();
+
+    QStringList filter;
+    filter << "*.bin";
+    presetsDir.setNameFilters(filter);
+
+    QFileInfoList files = presetsDir.entryInfoList();
+
+
+    for (const QFileInfo& file : files) {
+        QString fileNameWithoutExtension = file.baseName();
+        ui->cbRenderPresets->addItem(fileNameWithoutExtension);
+    }
+    ui->cbRenderPresets->blockSignals(false);
+}
+
 
 void CanvasTab::onUndo(bool checked)
 {
@@ -254,6 +287,17 @@ void CanvasTab::DoRender(bool forcePreview)
         ui->viewResult->show();
 
     }
+
+}
+
+QString CanvasTab::GetPresetsPath()
+{
+    // Get the executable's directory
+    QString exePath = QCoreApplication::applicationDirPath();
+    // Define the presets folder path
+    QString presetsDirPath = exePath + "/presets/canvas";
+
+    return presetsDirPath;
 
 }
 
@@ -474,3 +518,82 @@ void CanvasTab::on_chkViewRenderResults_clicked(bool checked)
     ui->viewResult->setVisible(checked);
 }
 
+
+void CanvasTab::on_cbRenderPresets_currentTextChanged(const QString &arg1)
+{
+
+    QString rawFilename = arg1 + ".bin";
+
+    QString fullFilename = GetPresetsPath() + "/" + rawFilename;
+
+    ZFile filePresetIn;
+
+    if (!filePresetIn.Open(fullFilename.toStdString(), EZFOpenMode::BinaryRead))
+        throw std::runtime_error("Could not open preset file.");
+
+
+    CanvasRenderPreset Pres;
+
+    filePresetIn >> Pres;
+
+    filePresetIn.Close();
+
+    ui->spbCFGScale->setValue(Pres.CFGScale);
+    ui->ledtResolution->setText(Pres.Resolution);
+
+    ui->widFinalConf->SetConfig(Pres.Final);
+    ui->widPreviewConf->SetConfig(Pres.Preview);
+
+
+
+
+
+
+
+
+}
+
+
+void CanvasTab::on_btnSavePreset_clicked()
+{
+    bool ok;
+    QString presetName = QInputDialog::getText(this, tr("Save Preset"),
+                                               tr("Preset Name:"), QLineEdit::Normal,
+                                               QString(), &ok);
+
+    if (!ok || presetName.isEmpty())
+        return;
+
+
+
+    QString presetsDirPath = GetPresetsPath();
+
+    // Verify that the folder exists, or create it
+    QDir dir(presetsDirPath);
+    if (!dir.exists()) {
+        if (!dir.mkpath(".")) {
+            QMessageBox::critical(this, tr("Error"), tr("Failed to create presets directory."));
+            return;
+        }
+    }
+
+    // Define the full filename with the path and .bin extension
+    QString filename = dir.filePath(presetName + ".bin");
+
+    CanvasRenderPreset Pres;
+
+    Pres.CFGScale = ui->spbCFGScale->value();
+    Pres.Final = ui->widFinalConf->GetConfig();
+    Pres.Preview = ui->widPreviewConf->GetConfig();
+    Pres.Resolution = ui->ledtResolution->text();
+
+    ZFile presout(filename.toStdString(), EZFOpenMode::BinaryWrite);
+
+    presout << Pres;
+
+    presout.Close();
+
+    RefreshPresets();
+
+
+}

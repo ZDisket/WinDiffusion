@@ -45,6 +45,7 @@ private:
 
 
     void DoRender(bool forcePreview = false);
+    QString GetPresetsPath();
 
     // Please cast the result to RenderConfigForm* because I don't feel like including it in the header.
     // Thank you.
@@ -55,6 +56,7 @@ private:
     void SetupColorWidgets();
     void SetupCanvas();
     void SetResult(QImage& img);
+    void RefreshPresets();
 
 
 public slots:
@@ -105,6 +107,10 @@ private slots:
     void on_spbSeed_valueChanged(int arg1);
 
     void on_chkViewRenderResults_clicked(bool checked);
+
+    void on_cbRenderPresets_currentTextChanged(const QString &arg1);
+
+    void on_btnSavePreset_clicked();
 
 signals:
     void DemandModelLoad();

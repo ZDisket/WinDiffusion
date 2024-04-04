@@ -7,6 +7,7 @@ CONFIG += force_debug_info
 CONFIG += c++20
 QMAKE_CXXFLAGS += /await:strict
 win32:LIBS += -lwindowsapp -lOLEAUT32 -lOle32 -lgdi32 -lUser32
+DEFINES += _QT
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -20,10 +21,13 @@ SOURCES += \
     canvas/layersettingsdialog.cpp \
     canvas/layerwidget.cpp \
     canvasinferer.cpp \
+    canvasrenderpreset.cpp \
     canvastab.cpp \
     clickableimagelabel.cpp \
     draggablelistwidget.cpp \
+    ext/ByteArr.cpp \
     ext/ColorUtils.cpp \
+    ext/ZFile.cpp \
     ext/qfloodfill.cpp \
     horizontalscrollarea.cpp \
     inferer.cpp \
@@ -46,10 +50,13 @@ HEADERS += \
     canvas/layersettingsdialog.h \
     canvas/layerwidget.h \
     canvasinferer.h \
+    canvasrenderpreset.h \
     canvastab.h \
     clickableimagelabel.h \
     draggablelistwidget.h \
+    ext/ByteArr.h \
     ext/ColorUtils.hpp \
+    ext/ZFile.h \
     ext/qfloodfill.h \
     horizontalscrollarea.h \
     inferer.h \

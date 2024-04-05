@@ -17,5 +17,9 @@
         <file>res/canvas/eraser.png</file>
         <file>res/canvas/eyedropper.png</file>
         <file>res/canvas/paint-bucket.png</file>
+        <file>res/windiff-ico.png</file>
+        <file>res/random64.png</file>
+        <file>res/refresh.png</file>
+        <file>res/fpdisk1.png</file>
     </qresource>
 </RCC>

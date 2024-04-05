@@ -7,6 +7,7 @@ CONFIG += force_debug_info
 CONFIG += c++20
 QMAKE_CXXFLAGS += /await:strict
 win32:LIBS += -lwindowsapp -lOLEAUT32 -lOle32 -lgdi32 -lUser32
+
 DEFINES += _QT
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -38,6 +39,7 @@ SOURCES += \
     paintablecanvas.cpp \
     pathwidgetitem.cpp \
     renderconfigform.cpp \
+    resolutionlineedit.cpp \
     stablediffusionmodel.cpp \
     topbarimg.cpp \
     upscaler.cpp
@@ -67,6 +69,7 @@ HEADERS += \
     paintablecanvas.h \
     pathwidgetitem.h \
     renderconfigform.h \
+    resolutionlineedit.h \
     stablediffusionmodel.h \
     threadsafequeue.hpp \
     topbarimg.h \
@@ -86,6 +89,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 
+
+win32: RC_ICONS = windiff-ico.ico
+
+
 INCLUDEPATH += $$PWD/deps/include
 INCLUDEPATH += $$PWD/deps/include-axcommon
 INCLUDEPATH += $$PWD/deps/include-axml
@@ -95,5 +102,7 @@ win32: LIBS += -L$$PWD/deps/lib/ QGoodWindow.lib Axodox.Common.lib DirectML.lib 
 
 RESOURCES += \
     stdres.qrc
+
+DISTFILES +=
 
 

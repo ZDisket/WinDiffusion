@@ -5,7 +5,7 @@ using namespace std;
 
 namespace Axodox::MachineLearning 
 {
-    Axodox::MachineLearning::ESRGAN::ESRGAN(OnnxEnvironment& environment, const std::string& ModelPath) :
+   ESRGAN::ESRGAN(OnnxEnvironment& environment, const std::string& ModelPath) :
         _environment(environment),
         _session(environment->CreateSession(ModelPath))
     {

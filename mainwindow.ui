@@ -48,7 +48,7 @@
     <item>
      <widget class="QTabWidget" name="tabsMain">
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -470,7 +470,7 @@ image-&gt;Send to img2img/inpaint</string>
                    </widget>
                   </item>
                   <item row="2" column="1">
-                   <widget class="QLineEdit" name="edtResolution">
+                   <widget class="ResolutionLineEdit" name="edtResolution">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -747,7 +747,7 @@ image-&gt;Send to img2img/inpaint</string>
           <item>
            <widget class="QTabWidget" name="tabsUpsOptions">
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tab_2">
              <attribute name="title">
@@ -1094,7 +1094,7 @@ image-&gt;Send to img2img/inpaint</string>
                 <item>
                  <widget class="QProgressBar" name="pgbBulkUpscales">
                   <property name="value">
-                   <number>24</number>
+                   <number>0</number>
                   </property>
                  </widget>
                 </item>
@@ -1295,6 +1295,11 @@ image-&gt;Send to img2img/inpaint</string>
    <class>DraggableListWidget</class>
    <extends>QListWidget</extends>
    <header>draggablelistwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ResolutionLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>resolutionlineedit.h</header>
   </customwidget>
  </customwidgets>
  <resources>

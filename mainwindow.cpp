@@ -16,6 +16,7 @@
 #include "canvastab.h"
 
 #include "newcanvasdialog.h"
+#include <QProgressDialog>
 
 #define GETCANVAS ((CanvasTab*)canvasTab)
 
@@ -484,21 +485,30 @@ void MainWindow::on_btnGenerate_clicked()
 }
 
 
-void MainWindow::on_btnLoadModel_clicked()
-{
-    // Get the current application directory path
+
+
+void MainWindow::on_btnLoadModel_clicked() {
     QString appDirPath = QCoreApplication::applicationDirPath();
-
-
     QString fullModelPath = appDirPath + "/models/" + ui->edtModelPath->currentText().trimmed();
 
     if (!LoadingFromModelsFolder)
         fullModelPath = ui->edtModelPath->currentText().trimmed();
 
+    // Create the dialog
+    QProgressDialog progressDialog("Loading Stable Diffusion model, the program might freeze for a bit - this is normal!", QString(), 0, 0, this);
+    progressDialog.setWindowModality(Qt::WindowModal);
+    progressDialog.setCancelButton(nullptr); // Disable the Cancel button
+    progressDialog.show();
+
+    // Ensure the dialog is displayed and the message is updated
+    QCoreApplication::processEvents();
+
     // Load the model using the full path
     CurrentMdl.Load(fullModelPath.toStdString(), QCoreApplication::applicationDirPath().toStdString() + "/auxiliary/");
 
+
 }
+
 
 int32_t MainWindow::GetNeighbor(size_t InIdx)
 {

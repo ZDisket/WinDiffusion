@@ -558,6 +558,10 @@
              <property name="text">
               <string>R</string>
              </property>
+             <property name="icon">
+              <iconset resource="stdres.qrc">
+               <normaloff>:/res/random64.png</normaloff>:/res/random64.png</iconset>
+             </property>
             </widget>
            </item>
           </layout>
@@ -595,8 +599,21 @@
            </item>
            <item>
             <widget class="QToolButton" name="btnSavePreset">
+             <property name="toolTip">
+              <string>Save render preset</string>
+             </property>
              <property name="text">
-              <string>S</string>
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="stdres.qrc">
+               <normaloff>:/res/fpdisk1.png</normaloff>:/res/fpdisk1.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -643,7 +660,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="ledtResolution">
+            <widget class="ResolutionLineEdit" name="ledtResolution">
              <property name="text">
               <string>768x768</string>
              </property>
@@ -931,6 +948,11 @@
    <extends>QWidget</extends>
    <header>renderconfigform.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ResolutionLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>resolutionlineedit.h</header>
   </customwidget>
  </customwidgets>
  <resources>

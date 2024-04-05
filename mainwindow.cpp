@@ -35,7 +35,7 @@ QString createOutputsFolder() {
 
 
 // Function to save an image in the specified directory with a unique name
-QString saveImage(const QImage& image, const QString& directoryPath) {
+QString MainWindow::saveImage(const QImage& image, const QString& directoryPath) {
     QDir dir(directoryPath);
     if (!dir.exists()) {
         dir.mkpath(".");
@@ -49,8 +49,10 @@ QString saveImage(const QImage& image, const QString& directoryPath) {
         ++fileNumber;
     } while (QFile::exists(filePath));
 
+
     // Save the image
-    image.save(filePath, "PNG");
+    imageSaver->Push(image, filePath);
+   // image.save(filePath, "PNG");
     qDebug() << "Image saved to: " << filePath;
     return filePath;
 }
@@ -151,7 +153,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    connect((CanvasTab*)canvasTab, &CanvasTab::DemandModelLoad, this, &MainWindow::ModelLoadDemanded);
+    connect(GETCANVAS, &CanvasTab::DemandModelLoad, this, &MainWindow::ModelLoadDemanded);
+    connect(GETCANVAS, &CanvasTab::SendImageToUpscale, this, &MainWindow::OnImageSendToUpscale);
+    connect(GETCANVAS, &CanvasTab::Done, this, &MainWindow::OnImageDone);
+
+    imageSaver = new ImageSaverThread;
+    imageSaver->start();
 
 }
 
@@ -159,6 +166,7 @@ MainWindow::~MainWindow()
 {
     on_actionClear_current_outputs_2_triggered();
     CurrentMdl.Destroy();
+    imageSaver->Stop();
     Exiting = true;
 
     try {
@@ -173,7 +181,7 @@ MainWindow::~MainWindow()
 
 }
 
-std::vector<QString> JobTypeToOutdir = {"txt2img", "img2img", "upscale"};
+std::vector<QString> JobTypeToOutdir = {"txt2img", "img2img", "upscale", "bulk-upscale", "canvas"};
 
 void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
 {
@@ -185,6 +193,9 @@ void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
 
 
     QString OutPath = saveImage(InImg, targetDirectory);
+
+    if (JobType == StableDiffusionJobType::Canvas)
+        return; // Nothing to do here; the handler here when it comes to Canvas jobs is to simply save the image.
 
     if (JobType == StableDiffusionJobType::Upscale)
     {
@@ -262,6 +273,7 @@ void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
 
 void MainWindow::OnBulkImageDone(QImage InImg, std::string OutputPath, QListWidgetItem* Itm)
 {
+    imageSaver->Push(InImg, QString::fromStdString(OutputPath));
 
     ui->lblImgBulkUps->setPixmap(QPixmap::fromImage(InImg.scaled(512,512, Qt::KeepAspectRatio, Qt::SmoothTransformation))
                                  );
@@ -309,12 +321,12 @@ void MainWindow::OnImageSendToInpaint(QImage *SndImg)
 
 }
 
-void MainWindow::OnImageSendToUpscale(QImage *SndImg)
+void MainWindow::OnImageSendToUpscale(QImage *SndImg,  bool TransferOwnership)
 {
     ui->tabsMain->setCurrentIndex(1);
     ui->tabsUpsOptions->setCurrentIndex(0);
 
-    ui->lblUpscalePreImage->SetImage(SndImg);
+    ui->lblUpscalePreImage->SetImage(SndImg, nullptr, TransferOwnership);
 
 
 }

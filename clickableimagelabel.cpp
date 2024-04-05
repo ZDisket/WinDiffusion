@@ -43,22 +43,24 @@ ClickableImageLabel::~ClickableImageLabel()
 
 void ClickableImageLabel::loadImage(const QString &imagePath)
 {
-    OriginalImage = new QImage(imagePath);
-    pToOriginalFilePath = new QString(imagePath);
 
-    OwnsImage = true;
-    SetImage(OriginalImage);
+    SetImage(new QImage(imagePath), new QString(imagePath), true);
 
 }
 
 
-void ClickableImageLabel::SetImage(QImage* Img, QString* Path)
+void ClickableImageLabel::SetImage(QImage* Img, QString* Path, bool TransferOwnership)
 {
+    if (OwnsImage && OriginalImage)
+        delete OriginalImage;
+
     OriginalImage = Img;
     setPixmap(
         QPixmap::fromImage(OriginalImage->scaled(pixmap().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation))
         );
     pToOriginalFilePath = Path;
+
+    OwnsImage = TransferOwnership;
 }
 
 void ClickableImageLabel::SetImagePreview(QImage &Img)
@@ -190,7 +192,7 @@ void ClickableImageLabel::OnClickSendToInpaint()
 
 void ClickableImageLabel::OnClickSendToUpscale()
 {
-    emit SendImageToUpscale(OriginalImage);
+    emit SendImageToUpscale(OriginalImage, false);
 
 }
 

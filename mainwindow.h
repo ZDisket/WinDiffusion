@@ -8,6 +8,9 @@
 #include <queue>
 #include "topbarimg.h"
 #include <QGoodWindow>
+#include "imagesaverthread.h"
+
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -53,7 +56,7 @@ public slots:
     void OnInpaintWidImageSet();
     void OnImageSendToImg2Img(QImage* SndImg);
     void OnImageSendToInpaint(QImage* SndImg);
-    void OnImageSendToUpscale(QImage* SndImg);
+    void OnImageSendToUpscale(QImage* SndImg, bool TransferOwnership = false);
     void OnPreviewsAvailable(std::vector<QImage> Previews);
     void ModelLoadDemanded();
 
@@ -160,7 +163,10 @@ private:
     Ui::MainWindow *ui;
     Inferer* CurrentInferThrd;
     CanvasTabPtr canvasTab;
+    ImageSaverThread* imageSaver;
+
     void UpdateUpscalerListing();
 
+    QString saveImage(const QImage &image, const QString &directoryPath);
 };
 #endif // MAINWINDOW_H

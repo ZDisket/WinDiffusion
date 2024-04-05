@@ -24,7 +24,7 @@ public:
     ~ClickableImageLabel() override;
 
     void loadImage(const QString& imagePath);
-    void SetImage(QImage *Img, QString *Path = nullptr);
+    void SetImage(QImage *Img, QString *Path = nullptr, bool TransferOwnership = false);
     void SetImagePreview(QImage& Img);
 private:
 
@@ -45,7 +45,7 @@ signals:
 
     void SendImageToInpaint(QImage* Img);
     void SendImageToImg2Img(QImage* Img);
-    void SendImageToUpscale(QImage* Img);
+    void SendImageToUpscale(QImage* Img, bool TransOwnership);
 
 
 private slots:

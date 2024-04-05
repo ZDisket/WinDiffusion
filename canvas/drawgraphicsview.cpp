@@ -6,7 +6,11 @@ DrawGraphicsView::DrawGraphicsView(QWidget *parent)
     setMouseTracking(true);
     viewport()->setMouseTracking(true);
     needsControlScroll = true;
-    // You can add more initialization code here if needed
+
+    actSendToUpscale = new QAction("Send to upscale", this);
+    actSaveAs = new QAction("Save as..", this);
+
+
 
 }
 
@@ -36,4 +40,25 @@ void DrawGraphicsView::wheelEvent(QWheelEvent *pWheelEvent)
 bool DrawGraphicsView::event(QEvent *event)
 {
     return QGraphicsView::event(event);
+}
+
+void DrawGraphicsView::contextMenuEvent(QContextMenuEvent *event)
+{
+
+    if (!acceptContextMenu)
+        return QGraphicsView::contextMenuEvent(event);
+
+
+
+    QMenu contextMenu(this);
+
+
+    contextMenu.addAction(actSendToUpscale);
+    contextMenu.addAction(actSaveAs);
+
+    contextMenu.exec(event->globalPos());
+
+
+    return QGraphicsView::contextMenuEvent(event);
+
 }

@@ -29,7 +29,7 @@ void Inferer::DoInference()
     StableDiffusionJobType CurrentJobType = StableDiffusionJobType::Txt2Img;
 
 
-    // Bulk upscale jobs load input and save outputs.
+    // Bulk upscale jobs load input
     if (!OutputPath.empty())
     {
         auto pathItem = (PathWidgetItem*)itmInput;
@@ -57,7 +57,6 @@ void Inferer::DoInference()
             emit Done(UpsImg.copy(), CurrentJobType);
         else
         {
-            UpsImg.save(QString::fromStdString(OutputPath));
             emit DoneBulk(UpsImg.copy(), OutputPath, itmInput);
 
         }

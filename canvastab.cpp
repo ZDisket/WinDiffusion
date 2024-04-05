@@ -78,6 +78,15 @@ void CanvasTab::SetupCanvas()
     resultPixmapItem = nullptr;
 
 
+    ui->viewResult->acceptContextMenu = true;
+
+
+    // action -> canvastab [get image] -> mainwindow [send to upscale]
+    connect(ui->viewResult->actSendToUpscale, &QAction::triggered, this, &CanvasTab::onResultSendToUpscale);
+
+    connect(ui->viewResult->actSaveAs, &QAction::triggered, this, &CanvasTab::onResultSaveAs);
+
+
 }
 
 void CanvasTab::SetResult(QImage &img)
@@ -406,11 +415,35 @@ void CanvasTab::onImageDone(QImage img)
     if (RenderAgain && ui->btnLivePreview->isChecked())
         DoRender(true);
 
+    emit Done(img, StableDiffusionJobType::Canvas);
+
 }
 
 void CanvasTab::onGetPreviews(std::vector<QImage> Imgs)
 {
     SetResult(Imgs[0]);
+
+}
+
+void CanvasTab::onResultSendToUpscale()
+{
+    if (!resultPixmapItem)
+        return;
+
+
+    // Unlike with the result image labels, which own QImage objects and only pass references, here we make a new one
+    // and make it the upscale label's responsibility to free.
+
+    QImage* nImg = new QImage(resultPixmapItem->pixmap().toImage().copy());
+
+    emit SendImageToUpscale(nImg, true);
+
+
+
+}
+
+void CanvasTab::onResultSaveAs()
+{
 
 }
 

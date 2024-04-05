@@ -11,7 +11,8 @@ enum class StableDiffusionJobType{
   Txt2Img,
   Img2Img,
   Upscale,
-  BulkUpscale
+  BulkUpscale,
+  Canvas
 };
 // An Voxer is a thread spawned for the sole purpose of doing inference
 class Inferer : public QThread

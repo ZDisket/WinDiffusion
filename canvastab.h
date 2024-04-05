@@ -7,6 +7,7 @@
 #include <QTimer>
 
 #include "canvasinferer.h"
+#include "inferer.h"
 namespace Ui {
 class CanvasTab;
 }
@@ -81,6 +82,10 @@ protected slots:
 
     void onImageDone(QImage img);
     void onGetPreviews(std::vector<QImage> Imgs);
+
+    void onResultSendToUpscale();
+    void onResultSaveAs();
+
 private slots:
     void on_btnBrush_clicked(bool checked);
     void on_btnEraser_clicked(bool checked);
@@ -114,6 +119,8 @@ private slots:
 
 signals:
     void DemandModelLoad();
+    void SendImageToUpscale(QImage* Img, bool TransOwnership);
+    void Done(QImage Img, StableDiffusionJobType JobType);
 };
 
 #endif // CANVASTAB_H

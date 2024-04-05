@@ -30,6 +30,7 @@ SOURCES += \
     ext/ZFile.cpp \
     ext/qfloodfill.cpp \
     horizontalscrollarea.cpp \
+    imagesaverthread.cpp \
     inferer.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
     ext/ZFile.h \
     ext/qfloodfill.h \
     horizontalscrollarea.h \
+    imagesaverthread.h \
     inferer.h \
     mainwindow.h \
     newcanvasdialog.h \

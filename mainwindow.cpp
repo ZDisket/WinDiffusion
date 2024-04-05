@@ -426,6 +426,8 @@ void MainWindow::on_btnGenerate_clicked()
     if (!CurrentMdl.IsLoaded())
         on_btnLoadModel_clicked();
 
+    GETCANVAS->KillInferer();
+
     CurrentGlobalPgb = ui->pgbAllGens;
 
 
@@ -903,6 +905,7 @@ void MainWindow::on_btnUpscale_clicked()
     if (!CurrentUpscaler.IsLoaded())
         on_btnLoadUpscaler_clicked();
 
+    GETCANVAS->KillInferer();
 
     if (ui->tabsUpsOptions->currentIndex() == 0)// Single
     {

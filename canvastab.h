@@ -12,6 +12,7 @@ namespace Ui {
 class CanvasTab;
 }
 
+// This is technically a QMainWindow, for the dock widget areas.
 class CanvasTab : public QMainWindow
 {
     Q_OBJECT
@@ -23,6 +24,7 @@ public:
     void NewCanvas(QSize sz, const QColor& fillcol);
 
     explicit CanvasTab(QWidget *parent = nullptr);
+    bool KillInferer();
     ~CanvasTab();
 
 private:

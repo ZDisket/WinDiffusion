@@ -99,6 +99,13 @@ void CanvasInferer::run()
 
         Queue.wait_and_pop(Ord);
 
+        if (Ord.Cancel)
+        {
+            qDebug() << "CanvasInferer: Cancel order received; ending";
+            return;
+        }
+
+
         qDebug() << "Order popped";
 
         ProcessOrder(Ord);

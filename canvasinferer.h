@@ -17,6 +17,7 @@ struct CanvasOrder{
     QImage InputImage;
     QImage InputMask;
     VaeMode Vae;
+    bool Cancel = false;
 
 
 };

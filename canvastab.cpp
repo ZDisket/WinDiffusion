@@ -40,6 +40,31 @@ CanvasTab::CanvasTab(QWidget *parent)
 
 }
 
+bool CanvasTab::KillInferer()
+{
+    if (!Inferer)
+        return false;
+
+    CurrentAsyncSrc->cancel();
+    Inferer->Stop = true;
+
+    /*
+     * So the way the Canvas inferer thread works is it uses a BLOCKING thread-safe queue, which will keep it stuck until
+     * it receives an order. Therefore, to stop it gracefully, we push an order with the Cancel flag to get it to pop.
+    */
+
+    // Actually, that might not be necessary? Gonna keep it anyway just in case.
+    Inferer->Queue.push(CanvasOrder{.Cancel = true});
+
+    Inferer->terminate();
+
+    delete Inferer;
+    Inferer = nullptr;
+
+    return true;
+
+}
+
 void CanvasTab::SetupColorWidgets()
 {
     ui->layColorSel->removeWidget(ui->btnSwitchColors);
@@ -445,7 +470,41 @@ void CanvasTab::onResultSendToUpscale()
 void CanvasTab::onResultSaveAs()
 {
 
+    if (!resultPixmapItem || resultPixmapItem->pixmap().isNull()) {
+        QMessageBox::warning(this, tr("Save As"), tr("Nothing to save."));
+        return;
+    }
+
+    // I love COM (sarcasm)
+    QFileDialog::Options options = QFileDialog::DontUseNativeDialog;
+    QString selectedFilter;
+
+    // Open the "Save As" dialog
+    QString fileName = QFileDialog::getSaveFileName(
+        this,                     // parent
+        tr("Save As"),            // dialog title
+        QDir::homePath(),         // directory to open
+        tr("PNG Files (*.png)"),  // filter
+        &selectedFilter,          // selected filter
+        options                   // options, using non-native dialog
+        );
+
+    if (fileName.isEmpty())
+        return;
+
+    if (!fileName.endsWith(".png", Qt::CaseInsensitive))
+        fileName += ".png";
+
+    // Save the pixmap
+    bool saved = resultPixmapItem->pixmap().save(fileName, "PNG");
+    if (!saved) {
+        QMessageBox::critical(this, tr("Save As"), tr("Failed to save the file."));
+    } else {
+        QMessageBox::information(this, tr("Save As"), tr("File saved successfully."));
+    }
+
 }
+
 
 
 void CanvasTab::on_btnLayUp_clicked()

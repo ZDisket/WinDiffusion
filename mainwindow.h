@@ -133,17 +133,17 @@ private:
     void IterateQueue();
     std::queue<SDOrder> TaskQueue; // STL queue for tasks
     QTimer* ProcessTimer; // Timer to trigger processing of the next task
-    bool IsProcessing; // Flag to indicate if a task is currently being processed
-    uint32_t CurrentItemNumber;
-    uint32_t CurrentImageNumber;
+    bool IsProcessing = false; // Flag to indicate if a task is currently being processed
+    uint32_t CurrentItemNumber = 0;
+    uint32_t CurrentImageNumber = 0;
 
     bool LoadingFromModelsFolder;
-    size_t CurrentImgDisplayIndex;
+    size_t CurrentImgDisplayIndex = 0;
     std::vector<TopBarImg*> TopBarImages;
 
 
-    QProgressBar* CurrentPgb;
-    QProgressBar* CurrentGlobalPgb;
+    QProgressBar* CurrentPgb = nullptr;
+    QProgressBar* CurrentGlobalPgb = nullptr;
 
     void UpdateModelListing();
     void UpdateSelectedTopBarImg(size_t NewSelected);
@@ -156,17 +156,19 @@ private:
     QTimer* progressPoller; // QTimer object
     std::unique_ptr<Axodox::Threading::async_operation_source> CurrentAsyncSrc;
     QString OutpsDir;
-    QSpacerItem* PreviewsSpacer;
-    bool UseFirst;
+    QSpacerItem* PreviewsSpacer = nullptr;
+    bool UseFirst = true;
     StableDiffusionModel CurrentMdl;
     Upscaler CurrentUpscaler;
     Ui::MainWindow *ui;
-    Inferer* CurrentInferThrd;
+    Inferer* CurrentInferThrd = nullptr;
     CanvasTabPtr canvasTab;
-    ImageSaverThread* imageSaver;
+    ImageSaverThread* imageSaver = nullptr;
 
     void UpdateUpscalerListing();
 
     QString saveImage(const QImage &image, const QString &directoryPath);
+    void SetupUI();
+    void SetupCanvas();
 };
 #endif // MAINWINDOW_H

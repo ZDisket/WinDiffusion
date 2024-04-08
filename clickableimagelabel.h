@@ -7,17 +7,16 @@
 #include <QDialog>
 #include <QVBoxLayout>
 #include <QLabel>
+#include "ext/maybe_ptr.hpp"
 
 /*
  ClickableImageLabel: A widget for display of result images
- It should NOT own its images, hence the heavy use of pointers
+ It's designed to only own its images in specific scenarios, hence the heavy use of pointers
 */
 class ClickableImageLabel : public QLabel {
     Q_OBJECT
 
 public:
-    QImage* OriginalImage; // Public member to hold the original image
-    QString* pToOriginalFilePath; // Pointer to a QString holding the file path
 
 
     explicit ClickableImageLabel(QWidget *parent = nullptr);
@@ -25,11 +24,23 @@ public:
 
     void loadImage(const QString& imagePath);
     void SetImage(QImage *Img, QString *Path = nullptr, bool TransferOwnership = false);
+    void ResetImage();
     void SetImagePreview(QImage& Img);
+
+    QImage* GetOriginalImage() {return OriginalImage.get();};
+
+    QSize getPreviewSize() const;
+    void setPreviewSize(const QSize &newPreviewSize);
+
 private:
 
+    // shared_ptr is not applicable here since TopBarImg allocates its image on the stack
+    maybe_ptr<QImage> OriginalImage;
 
-    bool OwnsImage;
+    QString OriginalFilePath = ""; // Pointer to a QString holding the file path
+
+    QSize PreviewSize = QSize(430,430);
+
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event) override;

@@ -60,11 +60,13 @@ HEADERS += \
     ext/ByteArr.h \
     ext/ColorUtils.hpp \
     ext/ZFile.h \
+    ext/maybe_ptr.hpp \
     ext/qfloodfill.h \
     horizontalscrollarea.h \
     imagesaverthread.h \
     inferer.h \
     mainwindow.h \
+    maybe_ptr.hpp \
     newcanvasdialog.h \
     paintablecanvas.h \
     pathwidgetitem.h \

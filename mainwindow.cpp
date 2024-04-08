@@ -80,33 +80,14 @@ void MainWindow::showEvent(QShowEvent *event)
 
 }
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+void MainWindow::SetupUI()
 {
-    ui->setupUi(this);
-
-    UseFirst = true;
-    PreviewsSpacer = nullptr;
-    CurrentPgb = nullptr;
-    CurrentInferThrd = nullptr;
-
-    OutpsDir = createOutputsFolder();
-
-
-    qRegisterMetaType< std::vector<Axodox::Graphics::TextureData> >("std::vector<Axodox::Graphics::TextureData>");
-
     progressPoller = new QTimer(this);
     progressPoller->setInterval(100);
     connect(progressPoller, &QTimer::timeout, this, &MainWindow::OnProgressPoll);
 
     progressPoller->start(); // Start the timer
 
-
-    IsProcessing = false;
-    CurrentItemNumber = 0;
-    CurrentImageNumber = 0;
-    CurrentImgDisplayIndex = 0;
 
     ui->scraImgPreviews->RegisterContentsWidget(ui->scrollAreaWidgetContents);
     CurrentAsyncSrc = std::make_unique<Axodox::Threading::async_operation_source>();
@@ -140,10 +121,12 @@ MainWindow::MainWindow(QWidget *parent)
     UpdateUpscalerListing();
 
     CoInitializeEx( 0, COINIT_APARTMENTTHREADED );
-
     CurrentGlobalPgb = ui->pgbAllGens;
 
+}
 
+void MainWindow::SetupCanvas()
+{
     canvasTab = new CanvasTab(this);
     canvasTab->setWindowFlags(Qt::Widget);
     QHBoxLayout *layout = new QHBoxLayout;
@@ -157,6 +140,25 @@ MainWindow::MainWindow(QWidget *parent)
     connect(GETCANVAS, &CanvasTab::DemandModelLoad, this, &MainWindow::ModelLoadDemanded);
     connect(GETCANVAS, &CanvasTab::SendImageToUpscale, this, &MainWindow::OnImageSendToUpscale);
     connect(GETCANVAS, &CanvasTab::Done, this, &MainWindow::OnImageDone);
+}
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+
+    OutpsDir = createOutputsFolder();
+
+
+    qRegisterMetaType< std::vector<Axodox::Graphics::TextureData> >("std::vector<Axodox::Graphics::TextureData>");
+
+    SetupUI();
+
+
+
+    SetupCanvas();
 
     imageSaver = new ImageSaverThread;
     imageSaver->start();
@@ -186,7 +188,6 @@ std::vector<QString> JobTypeToOutdir = {"txt2img", "img2img", "upscale", "bulk-u
 
 void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
 {
-    const int PREVIEW_RES = 430;
 
     QString dateSubfolder = QDate::currentDate().toString("dd-MM-yyyy");
     QString ImmediateFolder = JobTypeToOutdir[(size_t)JobType];
@@ -720,26 +721,17 @@ void MainWindow::UpdateSelectedTopBarImg(size_t NewSelected)
 
 void MainWindow::ResetViewports()
 {
-    const int PREVIEW_RES = 430;
 
+    ui->lblLeftImg->ResetImage();
+    ui->lblImg->ResetImage();
 
-    QPixmap WhiteFillPixm = QPixmap(PREVIEW_RES,PREVIEW_RES);
-    WhiteFillPixm.fill(Qt::white);
-
-    ui->lblLeftImg->setPixmap(WhiteFillPixm);
-    ui->lblLeftImg->OriginalImage = nullptr;
-    ui->lblLeftImg->pToOriginalFilePath = nullptr;
-
-    ui->lblImg->setPixmap(WhiteFillPixm);
-    ui->lblImg->OriginalImage = nullptr;
-    ui->lblImg->pToOriginalFilePath = nullptr;
 }
 
 void MainWindow::OnImg2ImgEnabled()
 {
-    const int PREVIEW_RES = 430;
+    QSize PreviewRes = ui->lblImg->getPreviewSize();
 
-    QImage white(PREVIEW_RES,PREVIEW_RES, QImage::Format_RGBA8888);
+    QImage white(PreviewRes.width(),PreviewRes.height(), QImage::Format_RGBA8888);
     white.fill(Qt::white);
     ui->widInpaintCanvas->loadImage(white);
 }
@@ -911,7 +903,7 @@ void MainWindow::on_btnUpscale_clicked()
     {
         SDOrder Ord{ui->edtPrompt->toPlainText().toStdString(), ui->edtNegPrompt->toPlainText().toStdString(), Axodox::MachineLearning::StableDiffusionOptions{}, (uint32_t)ui->spbBatchCount->value(), ui->edtSeed->text().isEmpty()};
 
-        Ord.InputImage = *ui->lblUpscalePreImage->OriginalImage;
+        Ord.InputImage = *ui->lblUpscalePreImage->GetOriginalImage();
         Ord.IsUpscale = true;
 
 

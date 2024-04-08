@@ -2,19 +2,31 @@
 #include <QDebug>
 
 ImageSaverThread::ImageSaverThread() {}
-
-void ImageSaverThread::Push(const QImage &Img, const QString &Path)
+using namespace std;
+void ImageSaverThread::Push(const std::variant<QImage, QPixmap> &Img, const QString &Path)
 {
-    Push(QPixmap::fromImage(Img), Path);
+    if (holds_alternative<QImage>(Img)){
+
+        Queue.push(
+            {QPixmap::fromImage(get<QImage>(Img)),
+             Path}
+            );
+
+    }
+    else if (holds_alternative<QPixmap>(Img))
+    {
+        Queue.push({get<QPixmap>(Img), Path});
+
+    }else{
+
+        throw std::invalid_argument("Unknown variant type for ImageSaverThread::Push; valid are QImage and QPixmap");
+    }
+
+
 
 }
 
-void ImageSaverThread::Push(const QPixmap &Pix, const QString &Path)
-{
 
-    Queue.push({Pix, Path});
-
-}
 
 void ImageSaverThread::Stop()
 {

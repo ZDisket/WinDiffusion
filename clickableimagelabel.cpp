@@ -13,8 +13,7 @@
 #include <QImageReader>
 
 ClickableImageLabel::ClickableImageLabel(QWidget *parent) : QLabel(parent) {
-    OriginalImage = nullptr;
-    pToOriginalFilePath = nullptr;
+
 
     actSendToImg2Img = new QAction("Send to img2img",this);
     actSendToInpaint = new QAction("Send to inpaint",this);
@@ -27,16 +26,11 @@ ClickableImageLabel::ClickableImageLabel(QWidget *parent) : QLabel(parent) {
    connect(actSendToUpscale, &QAction::triggered, this, &ClickableImageLabel::OnClickSendToUpscale);
    connect(actSendToFavorites, &QAction::triggered, this, &ClickableImageLabel::Favorite);
 
-   OwnsImage = false;
 }
 
 ClickableImageLabel::~ClickableImageLabel()
 {
-    if (OwnsImage && OriginalImage)
-    {
-        delete OriginalImage;
-        delete pToOriginalFilePath;
-    }
+
 
 
 }
@@ -51,24 +45,47 @@ void ClickableImageLabel::loadImage(const QString &imagePath)
 
 void ClickableImageLabel::SetImage(QImage* Img, QString* Path, bool TransferOwnership)
 {
-    if (OwnsImage && OriginalImage)
-        delete OriginalImage;
 
-    OriginalImage = Img;
+    OriginalImage = maybe_ptr<QImage>(Img, TransferOwnership);
     setPixmap(
         QPixmap::fromImage(OriginalImage->scaled(pixmap().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation))
         );
-    pToOriginalFilePath = Path;
 
-    OwnsImage = TransferOwnership;
+    if (Path)
+        OriginalFilePath = *Path;
+    else
+        OriginalFilePath = "";
+
+}
+
+void ClickableImageLabel::ResetImage()
+{
+    OriginalImage.reset();
+    OriginalFilePath = "";
+
+    QPixmap EmptyFill(PreviewSize);
+    EmptyFill.fill(Qt::white);
+
+    setPixmap(EmptyFill);
+
 }
 
 void ClickableImageLabel::SetImagePreview(QImage &Img)
 {
-    OriginalImage = nullptr;
+    OriginalImage.reset();
     setPixmap(
         QPixmap::fromImage(Img.scaled(pixmap().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation))
         );
+}
+
+QSize ClickableImageLabel::getPreviewSize() const
+{
+    return PreviewSize;
+}
+
+void ClickableImageLabel::setPreviewSize(const QSize &newPreviewSize)
+{
+    PreviewSize = newPreviewSize;
 }
 
 void ClickableImageLabel::mousePressEvent(QMouseEvent* event) {
@@ -83,7 +100,7 @@ void ClickableImageLabel::mousePressEvent(QMouseEvent* event) {
     if (OriginalImage->size().width() > 1024 && OriginalImage->size().height() > 1024)
     {
         // Open the image in windows image viewer
-        QDesktopServices::openUrl(QUrl::fromLocalFile(*pToOriginalFilePath));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(OriginalFilePath));
 
 
         return;
@@ -109,7 +126,7 @@ void ClickableImageLabel::mousePressEvent(QMouseEvent* event) {
 
 void ClickableImageLabel::contextMenuEvent(QContextMenuEvent *event) {
     QLabel::contextMenuEvent(event);
-    if (!pToOriginalFilePath)
+    if (OriginalFilePath.isEmpty())
         return;
 
     QMenu contextMenu(this);
@@ -130,9 +147,9 @@ void ClickableImageLabel::contextMenuEvent(QContextMenuEvent *event) {
 }
 
 void ClickableImageLabel::showInFolder() {
-    if (pToOriginalFilePath && !pToOriginalFilePath->isEmpty()) {
+    if (!OriginalFilePath.isEmpty()) {
         // Ensure the path is in Windows format (backslashes)
-        QString winPath = QDir::toNativeSeparators(*pToOriginalFilePath);
+        QString winPath = QDir::toNativeSeparators(OriginalFilePath);
 
         QStringList args;
         args << "/select," << winPath;
@@ -151,7 +168,7 @@ void ClickableImageLabel::Favorite() {
         dir.mkpath(FavesDir);
     }
 
-    if (pToOriginalFilePath && !pToOriginalFilePath->isEmpty()) {
+    if (!OriginalFilePath.isEmpty()) {
         // Construct the base filename for the new favorite file
         QString baseFileName = "fave_";
         QString fileExtension = ".png";
@@ -167,7 +184,7 @@ void ClickableImageLabel::Favorite() {
         QString newFilePath = FavesDir + newFileName;
 
         // Copy the original image file to the new favorite file path
-        bool success = QFile::copy(*pToOriginalFilePath, newFilePath);
+        bool success = QFile::copy(OriginalFilePath, newFilePath);
 
         if (!success) {
             qDebug() << "Could not copy the file to the favorites directory: " << newFilePath;
@@ -181,18 +198,18 @@ void ClickableImageLabel::Favorite() {
 void ClickableImageLabel::OnClickSendToImg2Img()
 {
 
-    emit SendImageToImg2Img(OriginalImage);
+    emit SendImageToImg2Img(OriginalImage.get());
 }
 
 void ClickableImageLabel::OnClickSendToInpaint()
 {
-    emit SendImageToInpaint(OriginalImage);
+    emit SendImageToInpaint(OriginalImage.get());
 
 }
 
 void ClickableImageLabel::OnClickSendToUpscale()
 {
-    emit SendImageToUpscale(OriginalImage, false);
+    emit SendImageToUpscale(OriginalImage.get(), false);
 
 }
 

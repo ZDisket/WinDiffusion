@@ -18,8 +18,9 @@ private:
 public:
     ImageSaverThread();
 
-    void Push(const QImage& Img, const QString& Path);
-    void Push(const QPixmap& Pix, const QString& Path);
+
+    void Push(const std::variant<QImage, QPixmap>& Img, const QString& Path);
+
     void Stop();
 
 protected:

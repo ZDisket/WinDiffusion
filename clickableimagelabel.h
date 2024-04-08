@@ -34,10 +34,11 @@ public:
 
 private:
 
-    // shared_ptr is not applicable here since TopBarImg allocates its image on the stack
+    // shared_ptr is not applicable here since TopBarImg allocates its image as an owning class member
+    // also, it would take too much refactoring
     maybe_ptr<QImage> OriginalImage;
 
-    QString OriginalFilePath = ""; // Pointer to a QString holding the file path
+    QString OriginalFilePath = "";
 
     QSize PreviewSize = QSize(430,430);
 

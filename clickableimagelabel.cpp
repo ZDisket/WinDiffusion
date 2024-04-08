@@ -38,7 +38,8 @@ ClickableImageLabel::~ClickableImageLabel()
 void ClickableImageLabel::loadImage(const QString &imagePath)
 {
 
-    SetImage(new QImage(imagePath), new QString(imagePath), true);
+    OriginalFilePath = imagePath;
+    SetImage(new QImage(imagePath), &OriginalFilePath, true);
 
 }
 
@@ -48,7 +49,7 @@ void ClickableImageLabel::SetImage(QImage* Img, QString* Path, bool TransferOwne
 
     OriginalImage = maybe_ptr<QImage>(Img, TransferOwnership);
     setPixmap(
-        QPixmap::fromImage(OriginalImage->scaled(pixmap().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation))
+        QPixmap::fromImage(OriginalImage->scaled(PreviewSize, Qt::KeepAspectRatio, Qt::SmoothTransformation))
         );
 
     if (Path)
@@ -60,7 +61,9 @@ void ClickableImageLabel::SetImage(QImage* Img, QString* Path, bool TransferOwne
 
 void ClickableImageLabel::ResetImage()
 {
-    OriginalImage.reset();
+    if (OriginalImage)
+        OriginalImage.reset();
+
     OriginalFilePath = "";
 
     QPixmap EmptyFill(PreviewSize);
@@ -74,7 +77,7 @@ void ClickableImageLabel::SetImagePreview(QImage &Img)
 {
     OriginalImage.reset();
     setPixmap(
-        QPixmap::fromImage(Img.scaled(pixmap().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation))
+        QPixmap::fromImage(Img.scaled(PreviewSize, Qt::KeepAspectRatio, Qt::SmoothTransformation))
         );
 }
 
@@ -86,6 +89,13 @@ QSize ClickableImageLabel::getPreviewSize() const
 void ClickableImageLabel::setPreviewSize(const QSize &newPreviewSize)
 {
     PreviewSize = newPreviewSize;
+
+    if (OriginalImage)
+        setPixmap(
+            QPixmap::fromImage(OriginalImage->scaled(PreviewSize, Qt::KeepAspectRatio, Qt::SmoothTransformation))
+            );
+    else
+        ResetImage();
 }
 
 void ClickableImageLabel::mousePressEvent(QMouseEvent* event) {

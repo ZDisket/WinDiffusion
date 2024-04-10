@@ -292,8 +292,8 @@ void CanvasTab::DoRender(bool forcePreview)
     Ord.BatchCount = 1;
 
     Ord.InputImage = CanvasFull;
-    Ord.NegativePrompt = ui->edtNegPrompt->toPlainText();
-    Ord.Prompt = ui->edtPrompt->toPlainText();
+    Ord.NegativePrompt = InterOpHelper::PreprocessPrompt(ui->edtNegPrompt->toPlainText());
+    Ord.Prompt = InterOpHelper::PreprocessPrompt(ui->edtPrompt->toPlainText());
 
 
     auto CurrentOptions = forcePreview ? ui->widPreviewConf->GetConfig() : ((RenderConfigForm*)GetCurrentConfigWidget())->GetConfig();

@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "qforeach.h"
 #include "ui_mainwindow.h"
 
 #include <random>
@@ -19,6 +20,11 @@
 #include <QProgressDialog>
 
 #define GETCANVAS ((CanvasTab*)canvasTab)
+
+
+
+
+
 
 // Function to create "outputs" folder if it doesn't exist
 QString createOutputsFolder() {
@@ -73,6 +79,7 @@ void MainWindow::showEvent(QShowEvent *event)
     ParentGoodWin->resize(1000,500);
 
     DidFirstShowStuff = true;
+
 
 
 
@@ -463,7 +470,17 @@ void MainWindow::on_btnGenerate_clicked()
 
 
 
-    SDOrder Ord{ui->edtPrompt->toPlainText().toStdString(), ui->edtNegPrompt->toPlainText().toStdString(), Options, (uint32_t)ui->spbBatchCount->value(), ui->edtSeed->text().isEmpty()};
+    std::pair<QString, QString> PositiveNegativePrompts {ui->edtPrompt->toPlainText(),
+                                                        ui->edtNegPrompt->toPlainText()};
+
+    std::pair<QString, QString> ProcessedPositiveNegativePrompts{QtAxInterop::InterOpHelper::PreprocessPrompt(PositiveNegativePrompts.first),
+                                                                 QtAxInterop::InterOpHelper::PreprocessPrompt(PositiveNegativePrompts.second)};
+
+    qDebug() << PositiveNegativePrompts.first << " -> " << ProcessedPositiveNegativePrompts.first;
+    qDebug() << PositiveNegativePrompts.second << " -> " << ProcessedPositiveNegativePrompts.second;
+
+    SDOrder Ord{ProcessedPositiveNegativePrompts.first.toStdString(), ProcessedPositiveNegativePrompts.second.toStdString(), Options, (uint32_t)ui->spbBatchCount->value(), ui->edtSeed->text().isEmpty()};
+
     if (ui->chkImg2Img->isChecked())
         Ord.InputImage = ui->widInpaintCanvas->getImage().copy();
     if (ui->chkInpaint->isChecked())
@@ -483,8 +500,6 @@ void MainWindow::on_btnGenerate_clicked()
     IterateQueue();
 
 
-
-    //InferThrd->DoInference();
 }
 
 

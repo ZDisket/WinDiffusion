@@ -42,7 +42,7 @@ Marked with ❌ means not currently available, but is on high priority.
 - ✔️ Image-to-image
 - ✔️ Inpainting
 - ✔️ Upscaling with ESRGAN
-- ❌ Prompt ((weighting))
+- ✔️ (Prompt:1.5) ((weighting))
 - ❌ Long prompts (longer than CLIP limit)
 - ❌ Face fix
 
@@ -55,5 +55,7 @@ TODO: fill out this section
 - [Axodox-machinelearning](https://github.com/axodox/axodox-machinelearning): C++ implementation of Stable Diffusion
 - [QGoodWindow](https://github.com/antonypro/QGoodWindow): Fancy windows for Qt
 - [JSON](https://github.com/nlohmann/json)
+- [Qt Color Widgets](https://gitlab.com/mattbas/Qt-Color-Widgets)
+
 
 

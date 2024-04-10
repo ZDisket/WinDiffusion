@@ -102,6 +102,53 @@ public:
 
     }
 
+    /*
+     * Preprocess a Stable Diffusion prompt with ((emphasis)) tags into (emphasis:1.2) tags, turning nested parenthesis into + 0.1 emphasis for each nest level
+     * For example, "an (important) word and ((very important)) point" -> "an (important:1.1) word and (very important:1.2) point"
+     * Thanks GPT-4
+    */
+    static QString PreprocessPrompt(QString input) {
+        QString result = input;
+        QList<int> openParensPositions;
+
+        // First pass: Adjust emphasis tags with weights
+        for (int i = 0; i < result.length(); ++i) {
+            if (result[i] == '(') {
+                openParensPositions.push_back(i);
+            } else if (result[i] == ')' && !openParensPositions.isEmpty()) {
+                int lastOpenPos = openParensPositions.takeLast();
+
+                // Calculate emphasis level based on the depth of this set of parentheses
+                float emphasisLevel = 1.0 + 0.1 * (openParensPositions.size() + 1);
+
+                // Check if content inside is an emphasis tag without a number
+                QString content = result.mid(lastOpenPos + 1, i - lastOpenPos - 1);
+                if (!content.contains(":")) {
+                    // It's an emphasis tag without a number, adjust it
+                    QString replacement = QString(":%1").arg(QString::number(emphasisLevel, 'f', 1));
+                    result.insert(i, replacement);
+                    i += replacement.length(); // Adjust current index to account for the inserted text
+                }
+            }
+        }
+
+        // Second pass: Remove nested parentheses
+        for (int i = 1; i < result.length(); ) { // Start from 1 to safely check previous character
+            if (result[i] == '(' && result[i - 1] == '(') {
+                result.remove(i, 1); // Remove the extra '('
+                continue; // Do not increment i to recheck at the same position
+            } else if (result[i] == ')' && i < result.length() - 1 && result[i + 1] == ')') {
+                result.remove(i, 1); // Remove the extra ')'
+                // Do not increment i to potentially handle multiple consecutive ')' removal
+                continue;
+            } else {
+                i++; // Only increment if no removals were made
+            }
+        }
+
+        return result;
+    }
+
 
 };
 

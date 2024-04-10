@@ -2,6 +2,7 @@
 #include "Collections/Hasher.h"
 #include "Infrastructure/BitwiseOperations.h"
 #include "Infrastructure/DependencyContainer.h"
+#include "qdebug.h"
 
 
 using namespace Axodox::Graphics;
@@ -68,6 +69,9 @@ void StableDiffusionModel::CreateTextEmbeddings(const std::string &PosPrompt, co
     }
 
     Options.TextEmbeddings.Tensor = tensor;
+
+    for (auto weight : Options.TextEmbeddings.Weights)
+        qDebug() << weight;
 
 }
 

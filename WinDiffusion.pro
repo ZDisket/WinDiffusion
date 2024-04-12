@@ -35,6 +35,8 @@ SOURCES += \
     inferer.cpp \
     main.cpp \
     mainwindow.cpp \
+    misc/modelbrowserdialog.cpp \
+    misc/modelloadingthreads.cpp \
     newcanvasdialog.cpp \
     paintablecanvas.cpp \
     pathwidgetitem.cpp \
@@ -67,6 +69,8 @@ HEADERS += \
     inferer.h \
     mainwindow.h \
     maybe_ptr.hpp \
+    misc/modelbrowserdialog.h \
+    misc/modelloadingthreads.h \
     newcanvasdialog.h \
     paintablecanvas.h \
     pathwidgetitem.h \
@@ -82,6 +86,7 @@ FORMS += \
     canvas/layerwidget.ui \
     canvastab.ui \
     mainwindow.ui \
+    misc/modelbrowserdialog.ui \
     newcanvasdialog.ui \
     renderconfigform.ui
 

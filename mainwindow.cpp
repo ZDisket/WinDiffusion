@@ -21,7 +21,7 @@
 
 #define GETCANVAS ((CanvasTab*)canvasTab)
 
-
+#include "misc/modelbrowserdialog.h"
 
 
 
@@ -1142,6 +1142,15 @@ void MainWindow::on_actNewCanvas_triggered()
         return;
 
     GETCANVAS->NewCanvas(dialog.settings.size, dialog.settings.color);
+
+}
+
+
+void MainWindow::on_actionDownload_models_triggered()
+{
+    ModelBrowserDialog MdlBrow(this);
+
+    MdlBrow.exec();
 
 }
 

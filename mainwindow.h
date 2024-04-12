@@ -125,6 +125,8 @@ private slots:
 
     void on_actNewCanvas_triggered();
 
+    void on_actionDownload_models_triggered();
+
 private:
 
     void SetControls(bool Enabled);

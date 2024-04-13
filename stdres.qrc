@@ -21,5 +21,8 @@
         <file>res/random64.png</file>
         <file>res/refresh.png</file>
         <file>res/fpdisk1.png</file>
+        <file>res/check.png</file>
+        <file>res/cross.png</file>
+        <file>res/warning.png</file>
     </qresource>
 </RCC>

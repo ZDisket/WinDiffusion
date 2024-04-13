@@ -1,5 +1,9 @@
 #pragma once
 
+/*
+ I am the THREADMAXXER
+*/
+
 #include <QThread>
 #include <QStringList>
 #include "Web/HuggingFaceClient.h"
@@ -68,4 +72,53 @@ private:
     ThreadSafeQueue<QString> searchQueue;
     Axodox::Web::HuggingFaceClient client;
     bool running;
+};
+
+
+struct DownloadRequest {
+    QString modelId;
+    std::filesystem::path targetPath;
+    bool justVerify = false;
+};
+
+enum class ModelVerifStatus{
+  Good = 0,
+  DoesntExist,
+  Invalid
+};
+
+
+class ModelDownloaderThread : public QThread {
+    Q_OBJECT
+
+public:
+
+
+    explicit ModelDownloaderThread(QObject *parent = nullptr);
+
+    Axodox::Threading::async_operation* AsOp = nullptr;
+
+    ~ModelDownloaderThread();
+
+    void run() override;
+    void enqueueDownload(const QString &modelId, const std::filesystem::path &path);
+    void enqueueVerification(const QString& modelId);
+
+    bool isDownloading() const;
+
+signals:
+    void downloadStarted(QString modelId);
+    void downloadFinished(QString modelId, bool success);
+    void verificationFinished(ModelVerifStatus Stat);
+    void downloadCanceled(QString modelId);
+
+private:
+
+    std::atomic<bool> Downloading = false;
+
+    ModelVerifStatus VerifyModel(const QString& modelId);
+
+    ThreadSafeQueue<DownloadRequest> downloadQueue;
+    Axodox::Web::HuggingFaceClient client;
+    std::atomic<bool> running;
 };

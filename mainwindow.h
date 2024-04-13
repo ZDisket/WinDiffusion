@@ -127,6 +127,8 @@ private slots:
 
     void on_actionDownload_models_triggered();
 
+    void on_actionDownload_a_model_from_Huggingface_triggered();
+
 private:
 
     void SetControls(bool Enabled);

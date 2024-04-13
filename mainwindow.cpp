@@ -22,7 +22,7 @@
 #define GETCANVAS ((CanvasTab*)canvasTab)
 
 #include "misc/modelbrowserdialog.h"
-
+#include "misc/modeldownloaddialog.h"
 
 
 
@@ -1151,6 +1151,15 @@ void MainWindow::on_actionDownload_models_triggered()
     ModelBrowserDialog MdlBrow(this);
 
     MdlBrow.exec();
+
+}
+
+
+void MainWindow::on_actionDownload_a_model_from_Huggingface_triggered()
+{
+    ModelDownloadDialog MdlDlw(this);
+
+    MdlDlw.exec();
 
 }
 

@@ -36,6 +36,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     misc/modelbrowserdialog.cpp \
+    misc/modeldownloaddialog.cpp \
     misc/modelloadingthreads.cpp \
     newcanvasdialog.cpp \
     paintablecanvas.cpp \
@@ -70,6 +71,7 @@ HEADERS += \
     mainwindow.h \
     maybe_ptr.hpp \
     misc/modelbrowserdialog.h \
+    misc/modeldownloaddialog.h \
     misc/modelloadingthreads.h \
     newcanvasdialog.h \
     paintablecanvas.h \
@@ -87,6 +89,7 @@ FORMS += \
     canvastab.ui \
     mainwindow.ui \
     misc/modelbrowserdialog.ui \
+    misc/modeldownloaddialog.ui \
     newcanvasdialog.ui \
     renderconfigform.ui
 

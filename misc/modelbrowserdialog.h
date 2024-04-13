@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "modelloadingthreads.h"
 #include <QTimer>
+#include <QListWidget>
 
 namespace Ui {
 class ModelBrowserDialog;
@@ -23,14 +24,20 @@ private slots:
 
     void on_chkHideNonQual_clicked(bool checked);
 
+    void on_ledtModelSearch_returnPressed();
+
+    void on_btnExit_clicked();
+
+    void on_lstModels_itemDoubleClicked(QListWidgetItem *item);
+
 protected slots:
     void onModelsFound(QStringList models);
     void onRequestMaxProgressBar(int maxpg);
     void onProgressPoll();
 
 private:
-    QTimer* progressPoller = nullptr;
-    ModelSearcherThread* Searcher = nullptr;
+    std::unique_ptr<QTimer> progressPoller;
+    std::unique_ptr<ModelSearcherThread> Searcher;
     Ui::ModelBrowserDialog *ui;
 };
 

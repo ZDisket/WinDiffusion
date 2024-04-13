@@ -1,6 +1,9 @@
 #include "modelbrowserdialog.h"
 #include "ui_modelbrowserdialog.h"
 
+
+
+
 ModelBrowserDialog::ModelBrowserDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::ModelBrowserDialog)
@@ -8,9 +11,10 @@ ModelBrowserDialog::ModelBrowserDialog(QWidget *parent)
     ui->setupUi(this);
 
 
-    Searcher = new ModelSearcherThread(this);
-    connect(Searcher, &ModelSearcherThread::modelsFound, this, &ModelBrowserDialog::onModelsFound);
-    connect(Searcher, &ModelSearcherThread::reqMaxProgressBar, this, &ModelBrowserDialog::onRequestMaxProgressBar);
+    Searcher =  std::make_unique<ModelSearcherThread>(this);
+    connect(Searcher.get(), &ModelSearcherThread::modelsFound, this, &ModelBrowserDialog::onModelsFound);
+    connect(Searcher.get(), &ModelSearcherThread::reqMaxProgressBar, this, &ModelBrowserDialog::onRequestMaxProgressBar);
+    Searcher->hideNonQualifying = false;
 
     Searcher->start();
 
@@ -25,10 +29,7 @@ ModelBrowserDialog::~ModelBrowserDialog()
 
     // if we don't do this the GUI thread hangs after closing the dialog.
     Searcher->terminate();
-    delete Searcher;
 
-    if (progressPoller)
-        delete progressPoller;
 
     delete ui;
 }
@@ -48,10 +49,10 @@ void ModelBrowserDialog::on_btnSearch_clicked()
 
     if (!progressPoller)
     {
-        progressPoller = new QTimer(this);
+        progressPoller = std::make_unique<QTimer>(this);
         progressPoller->setInterval(100);
 
-        connect(progressPoller, &QTimer::timeout, this, &ModelBrowserDialog::onProgressPoll);
+        connect(progressPoller.get(), &QTimer::timeout, this, &ModelBrowserDialog::onProgressPoll);
         progressPoller->start();
 
     }
@@ -89,5 +90,17 @@ void ModelBrowserDialog::on_chkHideNonQual_clicked(bool checked)
 void ModelBrowserDialog::on_ledtModelSearch_returnPressed()
 {
     on_btnSearch_clicked();
+}
+
+
+void ModelBrowserDialog::on_btnExit_clicked()
+{
+    accept();
+}
+
+
+void ModelBrowserDialog::on_lstModels_itemDoubleClicked(QListWidgetItem *item)
+{
+
 }
 

@@ -69,6 +69,8 @@ private slots:
 
     void OnTopBarClick(size_t LblIndex);
 
+    void OnRequestModelDownload(QString MdlName);
+
 private slots:
     void on_btnGenerate_clicked();
 
@@ -131,6 +133,7 @@ private slots:
 
 private:
 
+    void OpenDownloadModelDlg(const QString& DownMdlName = "");
     void SetControls(bool Enabled);
     bool DidFirstShowStuff;
     int32_t GetNeighbor(size_t InIdx);

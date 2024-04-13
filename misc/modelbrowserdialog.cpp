@@ -102,5 +102,16 @@ void ModelBrowserDialog::on_btnExit_clicked()
 void ModelBrowserDialog::on_lstModels_itemDoubleClicked(QListWidgetItem *item)
 {
 
+    emit requestModelDownload(item->text());
+
+}
+
+
+void ModelBrowserDialog::on_btnDownload_clicked()
+{
+    if (ui->lstModels->selectedItems().isEmpty())
+        return;
+
+    on_lstModels_itemDoubleClicked(ui->lstModels->selectedItems()[0]);
 }
 

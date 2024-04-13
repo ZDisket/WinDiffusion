@@ -428,6 +428,14 @@ void MainWindow::OnTopBarClick(size_t LblIndex)
 
 }
 
+void MainWindow::OnRequestModelDownload(QString MdlName)
+{
+    OpenDownloadModelDlg(MdlName);
+
+
+}
+
+
 
 void MainWindow::on_btnGenerate_clicked()
 {
@@ -1150,6 +1158,8 @@ void MainWindow::on_actionDownload_models_triggered()
 {
     ModelBrowserDialog MdlBrow(this);
 
+    connect(&MdlBrow, &ModelBrowserDialog::requestModelDownload, this, &MainWindow::OnRequestModelDownload);
+
     MdlBrow.exec();
 
 }
@@ -1157,7 +1167,15 @@ void MainWindow::on_actionDownload_models_triggered()
 
 void MainWindow::on_actionDownload_a_model_from_Huggingface_triggered()
 {
-    ModelDownloadDialog MdlDlw(this);
+    OpenDownloadModelDlg();
+
+}
+
+void MainWindow::OpenDownloadModelDlg(const QString &DownMdlName)
+{
+
+    ModelDownloadDialog MdlDlw(this, DownMdlName);
+    connect(&MdlDlw, &ModelDownloadDialog::requestModelRefresh, this, &MainWindow::on_actionRefresh_model_listing_triggered);
 
     MdlDlw.exec();
 

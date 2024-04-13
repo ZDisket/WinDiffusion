@@ -13,8 +13,13 @@ class ModelDownloadDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ModelDownloadDialog(QWidget *parent = nullptr);
+    explicit ModelDownloadDialog(QWidget *parent = nullptr, const QString& preload = "");
     ~ModelDownloadDialog();
+
+
+signals:
+    void requestModelRefresh();
+
 
 private slots:
     void on_btnVerify_clicked();
@@ -27,6 +32,7 @@ protected slots:
     void onVerificationFinished(ModelVerifStatus Stat);
     void onDownloadCanceled(QString modelId);
     void onProgressPoll();
+    void onDownloadFinished(QString modelId, bool success);
 
 private:
     bool DownloadAfterVerify = false;

@@ -11,7 +11,7 @@ using namespace std;
 #include <QTimer>
 #include <QMessageBox>
 
-ModelDownloadDialog::ModelDownloadDialog(QWidget *parent)
+ModelDownloadDialog::ModelDownloadDialog(QWidget *parent, const QString &preload)
     : QDialog(parent)
     , ui(new Ui::ModelDownloadDialog)
 {
@@ -35,6 +35,13 @@ ModelDownloadDialog::ModelDownloadDialog(QWidget *parent)
     connect(progressPoller.get(), &QTimer::timeout, this, &ModelDownloadDialog::onProgressPoll);
 
     progressPoller->start();
+
+    if (!preload.isEmpty())
+    {
+        ui->ledtModelName->setText(preload);
+        on_btnVerify_clicked();
+
+    }
 
 
 
@@ -119,6 +126,20 @@ void ModelDownloadDialog::onProgressPoll()
 
 }
 
+void ModelDownloadDialog::onDownloadFinished(QString modelId, bool success)
+{
+    if (!success)
+    {
+        QMessageBox::critical(this, "Error", "Failed to download this model.\nYour internet connection might have been interrupted, or you ran out of disk space");
+        return;
+    }
+
+    QMessageBox::information(this, "Success!", "The model has succesfully finished downloading. You may close this dialog and use it now.");
+
+    emit requestModelRefresh();
+
+}
+
 
 void ModelDownloadDialog::on_btnDownload_clicked()
 {
@@ -136,6 +157,7 @@ void ModelDownloadDialog::on_btnDownload_clicked()
     {
         on_btnVerify_clicked();
         DownloadAfterVerify = true;
+
         return;
 
     }
@@ -148,6 +170,7 @@ void ModelDownloadDialog::on_btnDownload_clicked()
     }
     else if (lastVerifiedModel.second == ModelVerifStatus::Invalid)
     {
+        // (͡°͜ʖ°)
         int butt = QMessageBox::warning(this, "Warning!", "This is not a valid Stable Diffusion ONNX model. Do you want to download anyway?\nOnly press Yes if you REALLY know what you're doing!",
                                       QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 

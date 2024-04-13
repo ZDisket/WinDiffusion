@@ -18,6 +18,9 @@ public:
     explicit ModelBrowserDialog(QWidget *parent = nullptr);
     ~ModelBrowserDialog();
 
+signals:
+    void requestModelDownload(QString mdlname);
+
 private slots:
     void on_btnSearch_clicked();
 
@@ -29,6 +32,8 @@ private slots:
     void on_btnExit_clicked();
 
     void on_lstModels_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_btnDownload_clicked();
 
 protected slots:
     void onModelsFound(QStringList models);

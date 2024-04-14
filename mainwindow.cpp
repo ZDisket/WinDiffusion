@@ -23,6 +23,7 @@
 
 #include "misc/modelbrowserdialog.h"
 #include "misc/modeldownloaddialog.h"
+#include "misc/checkgpudialog.h"
 
 
 
@@ -1178,6 +1179,14 @@ void MainWindow::OpenDownloadModelDlg(const QString &DownMdlName)
     connect(&MdlDlw, &ModelDownloadDialog::requestModelRefresh, this, &MainWindow::on_actionRefresh_model_listing_triggered);
 
     MdlDlw.exec();
+
+}
+
+
+void MainWindow::on_actCheckGPU_triggered()
+{
+    CheckGPUDialog Dlg(this);
+    Dlg.exec();
 
 }
 

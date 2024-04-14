@@ -131,6 +131,8 @@ private slots:
 
     void on_actionDownload_a_model_from_Huggingface_triggered();
 
+    void on_actCheckGPU_triggered();
+
 private:
 
     void OpenDownloadModelDlg(const QString& DownMdlName = "");

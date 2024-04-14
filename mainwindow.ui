@@ -1170,6 +1170,7 @@ image-&gt;Send to img2img/inpaint</string>
      <string>Help</string>
     </property>
     <addaction name="actionWhat_s_this"/>
+    <addaction name="actCheckGPU"/>
    </widget>
    <widget class="QMenu" name="menuCanvas">
     <property name="title">
@@ -1282,6 +1283,11 @@ image-&gt;Send to img2img/inpaint</string>
   <action name="actionDownload_a_model_from_Huggingface">
    <property name="text">
     <string>Download a model</string>
+   </property>
+  </action>
+  <action name="actCheckGPU">
+   <property name="text">
+    <string>Check GPU</string>
    </property>
   </action>
  </widget>

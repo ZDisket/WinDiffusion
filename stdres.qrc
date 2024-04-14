@@ -24,5 +24,7 @@
         <file>res/check.png</file>
         <file>res/cross.png</file>
         <file>res/warning.png</file>
+        <file>res/doublecheck.png</file>
+        <file>res/yellowcheck.png</file>
     </qresource>
 </RCC>

@@ -35,6 +35,7 @@ SOURCES += \
     inferer.cpp \
     main.cpp \
     mainwindow.cpp \
+    misc/checkgpudialog.cpp \
     misc/modelbrowserdialog.cpp \
     misc/modeldownloaddialog.cpp \
     misc/modelloadingthreads.cpp \
@@ -70,6 +71,7 @@ HEADERS += \
     inferer.h \
     mainwindow.h \
     maybe_ptr.hpp \
+    misc/checkgpudialog.h \
     misc/modelbrowserdialog.h \
     misc/modeldownloaddialog.h \
     misc/modelloadingthreads.h \
@@ -88,6 +90,7 @@ FORMS += \
     canvas/layerwidget.ui \
     canvastab.ui \
     mainwindow.ui \
+    misc/checkgpudialog.ui \
     misc/modelbrowserdialog.ui \
     misc/modeldownloaddialog.ui \
     newcanvasdialog.ui \

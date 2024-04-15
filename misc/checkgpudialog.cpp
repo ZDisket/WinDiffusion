@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>  // For std::pair
 #include <QDebug>
+#include <QMessageBox>
 
 
 const QStringList thresholdTooltips =
@@ -72,7 +73,19 @@ CheckGPUDialog::~CheckGPUDialog()
 void CheckGPUDialog::BuildUI()
 {
 
+
     auto [gpuName, vramInGB] = GetMainAdapterInfo();
+
+    if (!gpuName.size())
+    {
+        QMessageBox::critical(this, "Critical error!", "Error: Could not detect any DirectX devices (failed to create DXGI factory)."
+                                                       "\nTroubleshooting:\n1. Do you have any GPUs?\n2. Do you have DirectX 12 installed? (You should!)\n3. Is this a physical system? (not a virtual machine)"
+                                                       "\nIf the answer is yes to all, open an issue with your dxdiag information.");
+        close();
+
+        return;
+
+    }
 
     ui->lblGPU->setText("Main GPU: " + QString::fromStdWString(gpuName));
     ui->lblDedicatedVRAM->setText("Dedicated video memory: " + QString::number(vramInGB,'f',1) + " GB");

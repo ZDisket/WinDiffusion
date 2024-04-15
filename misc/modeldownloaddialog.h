@@ -20,6 +20,8 @@ public:
 signals:
     void requestModelRefresh();
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void on_btnVerify_clicked();

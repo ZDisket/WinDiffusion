@@ -25,6 +25,9 @@ public:
     explicit CheckGPUDialog(QWidget *parent = nullptr);
     ~CheckGPUDialog();
 
+private slots:
+    void on_buttonBox_accepted();
+
 private:
     void BuildUI();
 

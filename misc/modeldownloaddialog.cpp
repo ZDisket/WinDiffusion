@@ -10,6 +10,7 @@ using namespace std;
 
 #include <QTimer>
 #include <QMessageBox>
+#include <QCloseEvent>
 
 ModelDownloadDialog::ModelDownloadDialog(QWidget *parent, const QString &preload)
     : QDialog(parent)
@@ -55,6 +56,18 @@ ModelDownloadDialog::~ModelDownloadDialog()
     delete ui;
 }
 
+void ModelDownloadDialog::closeEvent(QCloseEvent *event)
+{
+    if (Downloader->isDownloading()) {
+        // If a download is in progress, ignore the close event and show a message
+        QMessageBox::warning(this, "Download in Progress",
+                             "Please cancel or let the download complete before closing this window.");
+        event->ignore();
+    } else {
+        event->accept();
+    }
+}
+
 void ModelDownloadDialog::on_btnVerify_clicked()
 {
 
@@ -73,14 +86,19 @@ void ModelDownloadDialog::onVerificationFinished(ModelVerifStatus Stat)
         QPixmap(VerifPixmaps[(int)Stat]).scaled(64,64, Qt::KeepAspectRatio, Qt::SmoothTransformation)
     );
 
+
     ui->lblProgressShow->setText(VerifTexts[(int)Stat]);
+    lastVerifiedModel = {ui->ledtModelName->text(), Stat};
+
+    if (Stat == ModelVerifStatus::DoesntExist)
+        return;
 
     // set the default save model name to the model name without the author name
     if (ui->ledtSaveModelName->text().isEmpty() || ui->chkAutoSaveName->isChecked())
         ui->ledtSaveModelName->setText(ui->ledtModelName->text().split("/")[1]);
 
 
-    lastVerifiedModel = {ui->ledtModelName->text(), Stat};
+
 
     if (DownloadAfterVerify)
     {

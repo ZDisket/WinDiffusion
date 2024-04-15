@@ -19,7 +19,7 @@ const QStringList thresholdTooltips =
 const QStringList thresholdPixmaps = {":/res/check.png", ":/res/yellowcheck.png", ":/res/cross.png"};
 const QStringList thresholdLabels = {"Good!", "Okay", "Inadequate"};
 const std::vector<int32_t> thresholdsSDXL = { 13, 11};
-const std::vector<int32_t> thresholdsSD = {11, 8};
+const std::vector<int32_t> thresholdsSD = {11, 7};
 
 std::pair<std::wstring, double> GetMainAdapterInfo() {
     IDXGIFactory4* pFactory;
@@ -132,3 +132,9 @@ void CheckGPUDialog::SetLabelThreshold(GPUThreshold thres,  const QString& model
 
 
 }
+
+void CheckGPUDialog::on_buttonBox_accepted()
+{
+    close();
+}
+

@@ -39,6 +39,7 @@ SOURCES += \
     misc/modelbrowserdialog.cpp \
     misc/modeldownloaddialog.cpp \
     misc/modelloadingthreads.cpp \
+    misc/recommendedsettings.cpp \
     newcanvasdialog.cpp \
     paintablecanvas.cpp \
     pathwidgetitem.cpp \
@@ -75,6 +76,7 @@ HEADERS += \
     misc/modelbrowserdialog.h \
     misc/modeldownloaddialog.h \
     misc/modelloadingthreads.h \
+    misc/recommendedsettings.h \
     newcanvasdialog.h \
     paintablecanvas.h \
     pathwidgetitem.h \

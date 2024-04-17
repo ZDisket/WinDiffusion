@@ -17,6 +17,12 @@ void CanvasTab::NewCanvas(QSize sz, const QColor &fillcol)
     AddLayer("Layer 1");
 }
 
+QComboBox *CanvasTab::getPresetsCb()
+{
+    return ui->cbRenderPresets;
+
+}
+
 CanvasTab::CanvasTab(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::CanvasTab)

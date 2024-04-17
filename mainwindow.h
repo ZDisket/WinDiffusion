@@ -137,6 +137,7 @@ private:
 
     void OpenDownloadModelDlg(const QString& DownMdlName = "");
     void SetControls(bool Enabled);
+    bool LoadRecommendedSettings(const QString& ModelFolder);
     bool DidFirstShowStuff;
     int32_t GetNeighbor(size_t InIdx);
     void IterateQueue();

@@ -24,7 +24,7 @@
 #include "misc/modelbrowserdialog.h"
 #include "misc/modeldownloaddialog.h"
 #include "misc/checkgpudialog.h"
-
+#include "misc/recommendedsettings.h"
 
 
 // Function to create "outputs" folder if it doesn't exist
@@ -518,8 +518,12 @@ void MainWindow::on_btnLoadModel_clicked() {
     QString appDirPath = QCoreApplication::applicationDirPath();
     QString fullModelPath = appDirPath + "/models/" + ui->edtModelPath->currentText().trimmed();
 
+
     if (!LoadingFromModelsFolder)
         fullModelPath = ui->edtModelPath->currentText().trimmed();
+
+
+
 
     // Create the dialog
     QProgressDialog progressDialog("Loading Stable Diffusion model, the program might freeze for a bit - this is normal!", QString(), 0, 0, this);
@@ -533,6 +537,7 @@ void MainWindow::on_btnLoadModel_clicked() {
     // Load the model using the full path
     CurrentMdl.Load(fullModelPath.toStdString(), QCoreApplication::applicationDirPath().toStdString() + "/auxiliary/");
 
+    LoadRecommendedSettings(fullModelPath);
 
 }
 
@@ -1041,8 +1046,6 @@ void MainWindow::on_btnUpsBrowseFolder_clicked() {
 
 
 void MainWindow::on_btnAddBulkFolder_clicked() {
-    // Clear the list widget to avoid duplicating items if the button is clicked multiple times
-    //ui->lstInputBulkFiles->clear();
 
     QString folderPath = ui->ledtBulkAddFolderPath->text();
 
@@ -1120,6 +1123,43 @@ void MainWindow::SetControls(bool Enabled)
     ui->btnGenerate->setEnabled(Enabled);
     ui->btnAddBulkFolder->setEnabled(Enabled);
 
+}
+
+
+#define SAFE_COMBOBOX_SET(combobox, str) {int32_t index = combobox->findText(str); if (index != -1) {combobox->setCurrentIndex(index);}}
+
+bool MainWindow::LoadRecommendedSettings(const QString &ModelFolder)
+{
+    QString JsonPath = QString::fromStdWString(
+        PATH_FROM_QSTRING(ModelFolder) / "windiffusion.json"
+        );
+
+    qDebug() << "Json path: " << JsonPath;
+    RecommendedSettings RecSets;
+
+    try {
+        if (!RecSets.Load(JsonPath))
+            return false;
+
+    } catch (std::exception& Ex) {
+        QMessageBox::warning(this, "Error?",
+                             tr("We found a recommended settings JSON, but failed to load because of:\n%1\nThis is not a serious error, but you should let whoever posted this model know. You may continue.").arg(Ex.what())
+                             );
+
+        return false;
+    }
+
+    ui->edtResolution->setText(RecSets.resolution);
+    ui->spbSamplingSteps->setValue(RecSets.sampling_steps);
+    ui->spbCFGScale->setValue((double)RecSets.cfg_scale);
+
+    SAFE_COMBOBOX_SET(ui->cbSampler, RecSets.sampler);
+    SAFE_COMBOBOX_SET(ui->cbUpscalerModels, RecSets.recommended_upscaler);
+    SAFE_COMBOBOX_SET(GETCANVAS->getPresetsCb(), RecSets.canvas_preset);
+    GETCANVAS->on_cbRenderPresets_currentTextChanged(RecSets.canvas_preset);
+
+
+    return true;
 }
 
 

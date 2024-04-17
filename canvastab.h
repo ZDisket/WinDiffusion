@@ -5,7 +5,7 @@
 #include "canvas/drawingscene.h"
 #include <QtColorWidgets/ColorSelector>
 #include <QTimer>
-
+#include <QComboBox>
 #include "canvasinferer.h"
 #include "inferer.h"
 namespace Ui {
@@ -22,6 +22,8 @@ public:
 
 
     void NewCanvas(QSize sz, const QColor& fillcol);
+
+    QComboBox* getPresetsCb();
 
     explicit CanvasTab(QWidget *parent = nullptr);
     bool KillInferer();
@@ -66,6 +68,7 @@ public slots:
     void onUndo(bool checked);
     void on_btnRender_clicked();
     void onProgressPoll();
+    void on_cbRenderPresets_currentTextChanged(const QString &arg1);
 
 protected slots:
 
@@ -115,7 +118,7 @@ private slots:
 
     void on_chkViewRenderResults_clicked(bool checked);
 
-    void on_cbRenderPresets_currentTextChanged(const QString &arg1);
+
 
     void on_btnSavePreset_clicked();
 

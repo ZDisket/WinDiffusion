@@ -12,23 +12,21 @@ using namespace nlohmann;
 bool RecommendedSettings::Load(const QString &filename)
 {
 
-    std::filesystem::path fPath = PATH_FROM_QSTRING(filename);
+    filesystem::path fPath = PATH_FROM_QSTRING(filename);
 
 
     if (!filesystem::exists(fPath))
         return false;
 
 
-    std::ifstream ifs(fPath);
+    ifstream ifs(fPath);
 
     if (!ifs.good())
         throw std::runtime_error("The JSON file is empty, invalid, or does not exist (but it seems to do?)");
 
 
     // read a JSON file
-    std::ifstream i(filename.toStdString());
-
-    json jdat = json::parse(i);
+    json jdat = json::parse(ifs);
 
 
     /*
@@ -58,7 +56,7 @@ bool RecommendedSettings::Load(const QString &filename)
         );
 
 
-    i.close();
+    ifs.close();
 
     return true;
 }

@@ -48,7 +48,7 @@
     <item>
      <widget class="QTabWidget" name="tabsMain">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1242,7 +1242,7 @@ image-&gt;Send to img2img/inpaint</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>What's this?</string>
+    <string>What's this? (BROKEN)</string>
    </property>
    <property name="shortcut">
     <string>F1</string>

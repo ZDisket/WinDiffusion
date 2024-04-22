@@ -79,7 +79,15 @@ void MainWindow::showEvent(QShowEvent *event)
 
     ParentGoodWin->resize(1000,500);
 
+    /*
+     * Running this in the constructor does it before the window is even shown; running it in the show event
+     * does it before the window is even populated - therefore, we delegate it to a timer.
+    */
+    QTimer::singleShot(2000, this, &MainWindow::checkFirstStart);
+
+
     DidFirstShowStuff = true;
+
 
 
 
@@ -171,6 +179,7 @@ MainWindow::MainWindow(QWidget *parent)
     imageSaver = new ImageSaverThread;
     imageSaver->start();
 
+
 }
 
 MainWindow::~MainWindow()
@@ -260,6 +269,7 @@ void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
     PreviewsSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
     ui->scraLayout->addSpacerItem(PreviewsSpacer);
 
+    // TODO: Clean this up
 
 
     //childWidget - QLabel you want to move to
@@ -728,6 +738,7 @@ void MainWindow::UpdateUpscalerListing() {
     if (!files.isEmpty()) {
         ui->cbUpscalerModels->setCurrentIndex(0);
     }
+
 }
 
 
@@ -1221,6 +1232,53 @@ void MainWindow::OpenDownloadModelDlg(const QString &DownMdlName)
     MdlDlw.exec();
 
 }
+
+void MainWindow::checkFirstStart() {
+    QString appPath = QCoreApplication::applicationDirPath();
+    QFile file(appPath + "/first_start.bin");
+
+
+    if (file.exists())
+        return;
+
+
+    // File does not exist, so ask the user if they want to check GPU compatibility
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "First Start",
+                                  "Looks like this is your first time starting WinDiffusion. "
+                                  "Would you like to check whether your hardware is compatible?",
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+        on_actCheckGPU_triggered();
+
+
+    // Regardless of the response, create the file to mark the first start
+    QFile newFile(appPath + "/first_start.bin");
+    if (newFile.open(QIODevice::WriteOnly)) {
+        newFile.close();  // Just creating the file, no need to write anything
+    }
+
+    // Stage 2: Ask the user if they want models.
+
+    if (!ui->edtModelPath->currentText().isEmpty())
+        return;
+
+
+    reply = QMessageBox::question(this, "No models",
+                                  "Looks like you've got no models! Would you like to download some?\nTip: Look at recommended-models.rtf included with this program (in the docs directory)",
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+        on_actionDownload_models_triggered();
+
+
+
+
+
+}
+
+
 
 
 void MainWindow::on_actCheckGPU_triggered()

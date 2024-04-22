@@ -70,6 +70,8 @@ private slots:
     void OnTopBarClick(size_t LblIndex);
 
     void OnRequestModelDownload(QString MdlName);
+    void checkFirstStart();
+
 
 private slots:
     void on_btnGenerate_clicked();

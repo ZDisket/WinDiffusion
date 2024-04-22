@@ -399,12 +399,20 @@
          <property name="text">
           <string>U</string>
          </property>
+         <property name="icon">
+          <iconset resource="stdres.qrc">
+           <normaloff>:/res/up.png</normaloff>:/res/up.png</iconset>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QToolButton" name="btnLayerDown">
          <property name="text">
           <string>D</string>
+         </property>
+         <property name="icon">
+          <iconset resource="stdres.qrc">
+           <normaloff>:/res/down.png</normaloff>:/res/down.png</iconset>
          </property>
         </widget>
        </item>
@@ -420,7 +428,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>222</width>
+          <width>225</width>
           <height>112</height>
          </rect>
         </property>

@@ -139,6 +139,9 @@ void MainWindow::SetupUI()
     CoInitializeEx( 0, COINIT_APARTMENTTHREADED );
     CurrentGlobalPgb = ui->pgbAllGens;
 
+    ui->lblUpscalePostImg->isUpscaleResult = true;
+
+
 }
 
 void MainWindow::SetupCanvas()
@@ -218,7 +221,7 @@ void MainWindow::OnImageDone(QImage InImg, StableDiffusionJobType JobType)
 
     if (JobType == StableDiffusionJobType::Upscale)
     {
-        ui->lblUpscalePostImg->loadImage(OutPath);
+        ui->lblUpscalePostImg->SetImage(&InImg, &OutPath);
         return;
     }
 
@@ -1154,7 +1157,7 @@ bool MainWindow::LoadRecommendedSettings(const QString &ModelFolder)
 
     } catch (std::exception& Ex) {
         QMessageBox::warning(this, "Error?",
-                             tr("We found a recommended settings JSON, but failed to load because of:\n%1\nThis is not a serious error, but you should let whoever posted this model know. You may continue.").arg(Ex.what())
+                             tr("We found a recommended settings JSON, but failed to load because of:\n%1\nThis is not a serious error. You may continue.").arg(Ex.what())
                              );
 
         return false;

@@ -32,6 +32,8 @@ public:
 private:
     QTimer* progressPoller;
 
+    QList<int> panelSizes;
+
     void Preinitialize();
 
     CanvasInferer* Inferer;
@@ -61,7 +63,7 @@ private:
     void SetupColorWidgets();
     void SetupCanvas();
     void SetResult(QImage& img);
-    void RefreshPresets();
+    void RefreshPresets(const QString& setPreset = "");
 
 
 public slots:
@@ -121,6 +123,8 @@ private slots:
 
 
     void on_btnSavePreset_clicked();
+
+    void on_chkViewRenderResults_stateChanged(int arg1);
 
 signals:
     void DemandModelLoad();

@@ -32,6 +32,8 @@ public:
     QSize getPreviewSize() const;
     void setPreviewSize(const QSize &newPreviewSize);
 
+    bool isUpscaleResult = false;
+
 private:
 
     // shared_ptr is not applicable here since TopBarImg allocates its image as an owning class member

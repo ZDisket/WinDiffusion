@@ -141,13 +141,15 @@ void CanvasTab::SetResult(QImage &img)
 
 
 
-void CanvasTab::RefreshPresets()
+void CanvasTab::RefreshPresets(const QString &setPreset)
 {
 
     QString presetsDirPath = GetPresetsPath();
 
     // Create a QDir object pointing to the presets directory
     QDir presetsDir(presetsDirPath);
+
+    QString presetToSet = setPreset;
 
     if (!presetsDir.exists())
         return;
@@ -167,6 +169,21 @@ void CanvasTab::RefreshPresets()
         ui->cbRenderPresets->addItem(fileNameWithoutExtension);
     }
     ui->cbRenderPresets->blockSignals(false);
+
+
+    // This will take care of every scenario:
+    /*
+     * First startup, presets found: Set the first one we find
+     * First startup, no presets: Do nothing
+     * Not first startup (so, after saving a preset): Set the preset we just saved.
+    */
+    if (presetToSet.isEmpty() && ui->cbRenderPresets->count())
+        presetToSet = ui->cbRenderPresets->currentText();
+
+    if (!presetToSet.isEmpty())
+        on_cbRenderPresets_currentTextChanged(presetToSet);
+
+
 }
 
 
@@ -614,6 +631,14 @@ void CanvasTab::on_spbSeed_valueChanged(int arg1)
 void CanvasTab::on_chkViewRenderResults_clicked(bool checked)
 {
     ui->viewResult->setVisible(checked);
+
+    if (!checked)
+        panelSizes = ui->splitter->sizes();
+
+    QList<int> setPanelSizes = checked ? panelSizes : QList<int>({width(), 0});
+
+    ui->splitter->setSizes(setPanelSizes);
+
 }
 
 
@@ -691,7 +716,13 @@ void CanvasTab::on_btnSavePreset_clicked()
 
     presout.Close();
 
-    RefreshPresets();
+    RefreshPresets(presetName);
 
 
 }
+
+void CanvasTab::on_chkViewRenderResults_stateChanged(int arg1)
+{
+
+}
+

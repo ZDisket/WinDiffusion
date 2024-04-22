@@ -148,10 +148,15 @@ void ClickableImageLabel::contextMenuEvent(QContextMenuEvent *event) {
    // emit OnMenuOpen(&contextMenu);
 
 
-    contextMenu.addAction(actSendToImg2Img);
-    contextMenu.addAction(actSendToInpaint);
-    contextMenu.addAction(actSendToUpscale);
-    contextMenu.addAction(actSendToFavorites);
+    if (!isUpscaleResult)
+    {
+
+        contextMenu.addAction(actSendToImg2Img);
+        contextMenu.addAction(actSendToInpaint);
+        contextMenu.addAction(actSendToUpscale);
+        contextMenu.addAction(actSendToFavorites);
+    }
+
 
     contextMenu.exec(event->globalPos());
 }

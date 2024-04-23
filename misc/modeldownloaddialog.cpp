@@ -25,6 +25,7 @@ ModelDownloadDialog::ModelDownloadDialog(QWidget *parent, const QString &preload
 
     connect(Downloader.get(), &ModelDownloaderThread::verificationFinished, this, &ModelDownloadDialog::onVerificationFinished);
     connect(Downloader.get(), &ModelDownloaderThread::downloadCanceled, this, &ModelDownloadDialog::onDownloadCanceled);
+    connect(Downloader.get(), &ModelDownloaderThread::downloadFinished, this, &ModelDownloadDialog::onDownloadFinished);
 
     Downloader->AsOp = AsyncOp.get();
     Downloader->start();
@@ -71,7 +72,7 @@ void ModelDownloadDialog::closeEvent(QCloseEvent *event)
 void ModelDownloadDialog::on_btnVerify_clicked()
 {
 
-    Downloader->enqueueVerification(ui->ledtModelName->text());
+    Downloader->enqueueVerification(ui->ledtModelName->text().trimmed());
 
 }
 
@@ -154,6 +155,8 @@ void ModelDownloadDialog::onDownloadFinished(QString modelId, bool success)
 
     QMessageBox::information(this, "Success!", "The model has succesfully finished downloading. You may close this dialog and use it now.");
 
+    ui->lblProgressShow->setText("Finished.");
+
     emit requestModelRefresh();
 
 }
@@ -206,8 +209,8 @@ void ModelDownloadDialog::on_btnDownload_clicked()
 
 
 
-    Downloader->enqueueDownload(ui->ledtModelName->text(),
-                                appDirPath / "models" / ui->ledtSaveModelName->text().toStdString()
+    Downloader->enqueueDownload(ui->ledtModelName->text().trimmed(),
+                                appDirPath / "models" / ui->ledtSaveModelName->text().trimmed().toStdString()
                                 );
 
 }

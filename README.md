@@ -17,6 +17,10 @@
 
 WinDiffusion is a Stable Diffusion frontend written in C++/Qt, without a single line of Python involved, using the ONNX runtime and DirectML to execute models
 
+![](assets/canvasmountain.gif)
+
+*Showcase of combined drawing-img2img Canvas tab*
+
 ### So, what's the deal?
 
 1. **Natively compatible with all GPU vendors**. The DirectML backend supports any DirectX 12-capable GPU

@@ -1,6 +1,8 @@
-<a href="https://github.com/ZDisket/WinDiffusion/releases">
-    <img src="assets/downloadbutton.png" alt="Download" width="492" height="196">
-</a>
+<p align="center">
+    <a href="https://github.com/ZDisket/WinDiffusion/releases">
+        <img src="assets/downloadbutton.png" alt="Download" width="328" height="131" style="margin: 20px;">
+    </a>
+</p>
 
 # WinDiffusion
 

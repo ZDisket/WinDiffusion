@@ -1,15 +1,16 @@
+<a href="https://github.com/ZDisket/WinDiffusion/releases">
+    <img src="assets/downloadbutton.png" alt="Download" width="492" height="196">
+</a>
+
 # WinDiffusion
 
-
-
-
-![](demo/demoreel.png)
+![](assets/demoreel.png)
 
 *Made with RealVisXL Lightning, 8 steps Euler A and upscaled with 4xUltraSharp*
 
 ## What is this?
 
-![](demo/porsches.png)
+![](assets/porsches.png)
 
 
 WinDiffusion is a Stable Diffusion frontend written in C++/Qt, without a single line of Python involved, using the ONNX runtime and DirectML to execute models

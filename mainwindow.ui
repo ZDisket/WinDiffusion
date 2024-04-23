@@ -1164,6 +1164,7 @@ image-&gt;Send to img2img/inpaint</string>
     <addaction name="actionScroll_Right"/>
     <addaction name="actionClear_current_outputs_2"/>
     <addaction name="separator"/>
+    <addaction name="actGenerate"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1288,6 +1289,14 @@ image-&gt;Send to img2img/inpaint</string>
   <action name="actCheckGPU">
    <property name="text">
     <string>Check GPU</string>
+   </property>
+  </action>
+  <action name="actGenerate">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Return</string>
    </property>
   </action>
  </widget>

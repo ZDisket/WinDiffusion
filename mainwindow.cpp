@@ -2,13 +2,11 @@
 #include "qforeach.h"
 #include "ui_mainwindow.h"
 
-#include <random>
 #include <QSpacerItem>
 #include <QCoreApplication>
 #include <QDir>
 #include <algorithm>
 
-#include "ESRGAN.h"
 
 #include "QtAxodoxInteropCommon.hpp"
 
@@ -453,6 +451,13 @@ void MainWindow::OnRequestModelDownload(QString MdlName)
 
 void MainWindow::on_btnGenerate_clicked()
 {
+
+    if (ui->edtPrompt->toPlainText().isEmpty() || ui->edtNegPrompt->toPlainText().isEmpty())
+    {
+        QMessageBox::critical(this, "Error", "Neither the positive nor negative prompts can be empty. Actually type something and try again.");
+        return;
+    }
+
     if (!CurrentMdl.IsLoaded())
         on_btnLoadModel_clicked();
 
@@ -1289,5 +1294,12 @@ void MainWindow::on_actCheckGPU_triggered()
     CheckGPUDialog Dlg(this);
     Dlg.exec();
 
+}
+
+
+void MainWindow::on_actGenerate_triggered()
+{
+    if (ui->tabsMain->currentIndex() == 0)
+        on_btnGenerate_clicked();
 }
 

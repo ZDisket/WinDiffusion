@@ -135,6 +135,8 @@ private slots:
 
     void on_actCheckGPU_triggered();
 
+    void on_actGenerate_triggered();
+
 private:
 
     void OpenDownloadModelDlg(const QString& DownMdlName = "");

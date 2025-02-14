@@ -123,8 +123,41 @@ void Inferer::DoInference()
 
         for (auto& Buff : Buffs)
         {
-
+            // the output image
             QImage image(Buff.data(), Opts.Width, Opts.Height, Opts.Width * BYTES_PER_PIXEL_RGBA, format);
+
+            // Handle inpainting case
+            if (!InputMask.isNull())
+            {
+                // Do these actually do anything? The image and mask should be already scaled.
+                QImage scaledMask = InputMask.scaled(Opts.Width,Opts.Height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                QImage scaledImg = InputImage.scaled(Opts.Width,Opts.Height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+                /*
+                 * Now we need to ensure only the masked pixels are actually modified from the input image, otherwise the entire image
+                 * progressively degrades due to going in and out of the VAE
+                 *
+                 * Since we don't want to make a new QImage, we do the inverse approach: every non-masked pixel is reverted to the original image.
+                */
+                // Loop over every pixel in the output image
+                for (int y = 0; y < image.height(); ++y)
+                {
+                    for (int x = 0; x < image.width(); ++x)
+                    {
+                        // Since InputMask is grayscale, white pixels are those with value 255.
+                        // If the pixel is not white, it's not masked.
+                        if (scaledMask.pixel(x, y) != qRgb(255, 255, 255))
+                        {
+                            // Replace the output image pixel with the original input image pixel.
+                            image.setPixel(x, y, scaledImg.pixel(x, y));
+                        }
+                    }
+                }
+
+
+
+
+            }
 
 
             emit Done(image.copy(), CurrentJobType); // the .copy is VERY important!!!!! apparently QImage from buffer doesn't copy the data so the UI thread ends up trying to use invalid memory otherwise.

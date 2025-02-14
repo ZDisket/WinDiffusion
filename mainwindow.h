@@ -31,6 +31,7 @@ struct SDOrder{
     bool IsUpscale = false;
     std::string OutputPath = "";
     QListWidgetItem* itmUpscaleInput = nullptr;
+    uint32_t Smoothness;
 
 };
 

@@ -39,6 +39,7 @@ public:
     std::string Prompt;
     std::string NegativePrompt;
     uint32_t BatchCount;
+    uint32_t SmoothnessWidth;
     bool RandomSeed;
 
     std::string OutputPath;

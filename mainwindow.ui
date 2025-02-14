@@ -547,11 +547,32 @@ image-&gt;Send to img2img/inpaint</string>
                     </layout>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="chkInpaint">
-                     <property name="text">
-                      <string>Inpaint</string>
-                     </property>
-                    </widget>
+                    <layout class="QHBoxLayout" name="horizontalLayout_17">
+                     <item>
+                      <widget class="QCheckBox" name="chkInpaint">
+                       <property name="text">
+                        <string>Inpaint</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_16">
+                       <property name="text">
+                        <string>Smooth:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="spbSmoothNess">
+                       <property name="minimum">
+                        <number>1</number>
+                       </property>
+                       <property name="value">
+                        <number>3</number>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>

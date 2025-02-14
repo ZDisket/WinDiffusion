@@ -507,6 +507,8 @@ void MainWindow::on_btnGenerate_clicked()
     qDebug() << PositiveNegativePrompts.second << " -> " << ProcessedPositiveNegativePrompts.second;
 
     SDOrder Ord{ProcessedPositiveNegativePrompts.first.toStdString(), ProcessedPositiveNegativePrompts.second.toStdString(), Options, (uint32_t)ui->spbBatchCount->value(), ui->edtSeed->text().isEmpty()};
+    Ord.Smoothness = ui->spbSmoothNess->value();
+
 
     if (ui->chkImg2Img->isChecked())
         Ord.InputImage = ui->widInpaintCanvas->getImage().copy();
@@ -608,6 +610,7 @@ void MainWindow::IterateQueue()
     InferThrd->NegativePrompt = CuOrd.NegativePrompt;
     InferThrd->BatchCount = CuOrd.BatchCount;
     InferThrd->RandomSeed = CuOrd.RandomSeed;
+    InferThrd->SmoothnessWidth = CuOrd.Smoothness;
 
     if (!CuOrd.InputImage.isNull())
         InferThrd->InputImage = CuOrd.InputImage.copy();

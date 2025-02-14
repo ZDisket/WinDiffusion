@@ -21,6 +21,101 @@ Inferer::Inferer() {
 }
 
 
+// Blend the inpainted output with the input image using a soft mask created from maskImage.
+// - inputImage: the original image.
+// - outputImage: the inpainted image.
+// - maskImage: an ARGB mask; fully opaque pixels (alpha > ~128) are considered masked.
+// - blendWidth: the width (in pixels) of the blending border.
+QImage blendInpaintedRegion(const QImage &inputImage,
+                            const QImage &outputImage,
+                            const QImage &maskImage,
+                            int blendWidth)
+{
+    // Ensure all images are the same size.
+    const int width  = inputImage.width();
+    const int height = inputImage.height();
+    QImage result(inputImage.size(), inputImage.format());
+
+    // If no blending is desired, use a hard mask.
+    if (blendWidth <= 0)
+    {
+        for (int y = 0; y < height; ++y)
+        {
+            for (int x = 0; x < width; ++x)
+            {
+                // Use a threshold of 128; adjust if needed.
+                int alpha = qAlpha(maskImage.pixel(x, y));
+                if (alpha > 128)
+                    result.setPixel(x, y, outputImage.pixel(x, y));
+                else
+                    result.setPixel(x, y, inputImage.pixel(x, y));
+            }
+        }
+        return result;
+    }
+
+    // Step 1: Create a binary soft mask from the mask's alpha channel.
+    // We'll consider pixels with alpha > 128 as "1" (masked) and others as "0".
+    std::vector<float> softMask(width * height, 0.0f);
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            int a = qAlpha(maskImage.pixel(x, y));
+            softMask[y * width + x] = (a > 128 ? 1.0f : 0.0f);
+        }
+    }
+
+    // Step 2: Apply a box blur to the binary soft mask to smooth the edges.
+    // The box filter size is (2*blendWidth+1) x (2*blendWidth+1).
+    std::vector<float> blurred(width * height, 0.0f);
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            float sum = 0.0f;
+            int count = 0;
+            for (int j = -blendWidth; j <= blendWidth; ++j)
+            {
+                int yy = y + j;
+                if (yy < 0 || yy >= height)
+                    continue;
+                for (int i = -blendWidth; i <= blendWidth; ++i)
+                {
+                    int xx = x + i;
+                    if (xx < 0 || xx >= width)
+                        continue;
+                    sum += softMask[yy * width + xx];
+                    ++count;
+                }
+            }
+            blurred[y * width + x] = sum / count; // value in [0,1]
+        }
+    }
+
+    // Step 3: Blend outputImage and inputImage using the blurred soft mask.
+    // A weight of 1.0 uses the outputImage (inpainted result); 0.0 uses the inputImage.
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            float w = blurred[y * width + x];  // Blending weight
+
+            QColor inColor  = QColor::fromRgba(inputImage.pixel(x, y));
+            QColor outColor = QColor::fromRgba(outputImage.pixel(x, y));
+
+            int r = static_cast<int>(inColor.red()   * (1.0f - w) + outColor.red()   * w);
+            int g = static_cast<int>(inColor.green() * (1.0f - w) + outColor.green() * w);
+            int b = static_cast<int>(inColor.blue()  * (1.0f - w) + outColor.blue()  * w);
+            int a = static_cast<int>(inColor.alpha() * (1.0f - w) + outColor.alpha() * w);
+
+            result.setPixel(x, y, qRgba(r, g, b, a));
+        }
+    }
+
+    return result;
+}
+
 
 
 void Inferer::DoInference()
@@ -133,28 +228,7 @@ void Inferer::DoInference()
                 QImage scaledMask = InputMask.scaled(Opts.Width,Opts.Height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                 QImage scaledImg = InputImage.scaled(Opts.Width,Opts.Height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-                /*
-                 * Now we need to ensure only the masked pixels are actually modified from the input image, otherwise the entire image
-                 * progressively degrades due to going in and out of the VAE
-                 *
-                 * Since we don't want to make a new QImage, we do the inverse approach: every non-masked pixel is reverted to the original image.
-                */
-                // Loop over every pixel in the output image
-                for (int y = 0; y < image.height(); ++y)
-                {
-                    for (int x = 0; x < image.width(); ++x)
-                    {
-                        // Since InputMask is grayscale, white pixels are those with value 255.
-                        // If the pixel is not white, it's not masked.
-                        if (scaledMask.pixel(x, y) != qRgb(255, 255, 255))
-                        {
-                            // Replace the output image pixel with the original input image pixel.
-                            image.setPixel(x, y, scaledImg.pixel(x, y));
-                        }
-                    }
-                }
-
-
+                image = blendInpaintedRegion(scaledImg, image, scaledMask, SmoothnessWidth);
 
 
             }
